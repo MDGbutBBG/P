@@ -1,0 +1,4003 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHRAE — ค้นพบเสน่ห์เมืองแพร่</title>
+    <meta name="description"
+        content="สำรวจจังหวัดแพร่ เมืองล้านนาแห่งขุนเขา วัดเก่าแก่ และธรรมชาติอันงดงาม">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        /* ===== DESIGN TOKENS ===== */
+        :root {
+            --color-cream: #F0F3D8;
+            --color-cream-soft: #f5f6e8;
+            --color-dark: #1a1f2e;
+            --color-dark-accent: #344054;
+            --color-white: #ffffff;
+            --color-gold: #c8a96e;
+            --color-gold-light: #e8d5a8;
+
+            --font-title: 'Cinzel', serif;
+            --font-subtitle: 'Playfair Display', serif;
+            --font-ui: 'Outfit', sans-serif;
+            --font-thai: 'Noto Sans Thai', sans-serif;
+            --font-chinese: 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+
+            --radius-sm: 0.75rem;
+            --radius-md: 1.25rem;
+            --radius-lg: 2rem;
+            --radius-xl: 3rem;
+            --radius-full: 9999px;
+
+            --shadow-soft: 0 4px 30px rgba(0, 0, 0, 0.15);
+            --shadow-elevated: 0 8px 40px rgba(0, 0, 0, 0.25);
+            --shadow-glow: 0 0 60px rgba(200, 169, 110, 0.15);
+
+            --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+            --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* ===== LOCALIZED TYPOGRAPHY ===== */
+        html[lang="th"] {
+            --font-ui: 'Noto Sans Thai', sans-serif;
+            --font-subtitle: 'Noto Sans Thai', sans-serif;
+        }
+
+        html[lang="zh-CN"] {
+            --font-ui: 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+            --font-subtitle: 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        :lang(th) {
+            font-family: var(--font-thai);
+        }
+
+        :lang(zh-CN) {
+            font-family: var(--font-chinese);
+        }
+
+        /* Subtitle ที่เป็น heading ขนาดใหญ่ — ให้ weight เพิ่มขึ้นอีกนิด */
+        .hero-subtitle,
+        .map-info-amphoe {
+            font-weight: 500;
+            letter-spacing: 0.01em;
+        }
+
+        /* card-title ภาษาไทย */
+        .card-title {
+            font-weight: 600;
+            letter-spacing: 0.01em;
+        }
+
+        /* section title ที่มีทั้งภาษาไทยและอังกฤษ */
+        .section-title {
+            font-family: var(--font-subtitle);
+        }
+
+        /* ===== RESET & BASE ===== */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-ui);
+            background: #000;
+            color: var(--color-white);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        ::selection {
+            background: var(--color-cream);
+            color: #000;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-family: inherit;
+            color: inherit;
+        }
+
+        /* Keep keyboard navigation obvious without changing the visual language. */
+        :focus-visible {
+            outline: 3px solid var(--color-gold-light);
+            outline-offset: 4px;
+        }
+
+        img {
+            display: block;
+            max-width: 100%;
+        }
+
+        /* ===== HERO SCREEN ===== */
+        .hero-screen {
+            position: relative;
+            height: 100vh;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* ===== BACKGROUND ===== */
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+        }
+
+        .hero-bg img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 40%;
+            opacity: 0.85;
+            transition: opacity 0.8s ease-in-out;
+            animation: bgZoom 30s ease-in-out infinite alternate;
+        }
+
+        @keyframes bgZoom {
+            0% {
+                transform: scale(1);
+            }
+
+            100% {
+                transform: scale(1.08);
+            }
+        }
+
+        .hero-bg::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(180deg,
+                    rgba(0, 0, 0, 0.45) 0%,
+                    rgba(0, 0, 0, 0.05) 35%,
+                    rgba(0, 0, 0, 0.02) 50%,
+                    rgba(0, 0, 0, 0.35) 75%,
+                    rgba(0, 0, 0, 0.8) 100%);
+        }
+
+        /* ===== CONTENT LAYER ===== */
+        .content-layer {
+            position: relative;
+            z-index: 10;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .content-layer {
+                padding: 2.5rem;
+            }
+        }
+
+        @media (min-width: 1440px) {
+            .content-layer {
+                padding: 3rem 4rem;
+            }
+        }
+
+        /* ===== HEADER ===== */
+        .site-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 50;
+        }
+
+        .menu-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            padding: 0.5rem;
+            border-radius: var(--radius-md);
+            transition: background 0.3s var(--ease-smooth);
+        }
+
+        .menu-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .menu-icon {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            width: 28px;
+        }
+
+        .menu-icon span {
+            display: block;
+            height: 1.5px;
+            background: var(--color-white);
+            border-radius: 2px;
+            transition: all 0.4s var(--ease-smooth);
+        }
+
+        .menu-icon span:first-child {
+            width: 100%;
+        }
+
+        .menu-icon span:last-child {
+            width: 65%;
+        }
+
+        .menu-btn:hover .menu-icon span:first-child {
+            width: 65%;
+        }
+
+        .menu-btn:hover .menu-icon span:last-child {
+            width: 100%;
+        }
+
+        .menu-label {
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        /* Logo */
+        .logo-container {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .logo-circle {
+            width: 4rem;
+            height: 4rem;
+            background: var(--color-white);
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-elevated), var(--shadow-glow);
+            transition: transform 0.5s var(--ease-bounce), box-shadow 0.5s var(--ease-smooth);
+        }
+
+        .logo-circle:hover {
+            transform: scale(1.08);
+            box-shadow: var(--shadow-elevated), 0 0 80px rgba(200, 169, 110, 0.3);
+        }
+
+        .logo-circle i {
+            font-size: 1.6rem;
+            color: var(--color-gold);
+        }
+
+        @media (min-width: 768px) {
+            .logo-circle {
+                width: 5rem;
+                height: 5rem;
+            }
+
+            .logo-circle i {
+                font-size: 2rem;
+            }
+        }
+
+        /* Header Actions */
+        .header-actions {
+            display: flex;
+            gap: 0.6rem;
+        }
+
+        .icon-btn {
+            width: 2.75rem;
+            height: 2.75rem;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+            transition: all 0.35s var(--ease-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .icon-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: var(--color-cream);
+            transition: opacity 0.35s var(--ease-smooth);
+            z-index: 0;
+        }
+
+        .icon-btn i {
+            position: relative;
+            z-index: 1;
+            color: var(--color-dark);
+        }
+
+        .icon-btn:hover::before {
+            opacity: 0.85;
+        }
+
+        .icon-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(240, 243, 216, 0.3);
+        }
+
+        .icon-btn:active {
+            transform: translateY(0) scale(0.95);
+        }
+
+        /* Language picker — anchored to the globe so it is easy to find on every screen size. */
+        .language-switcher {
+            position: relative;
+        }
+
+        .language-menu {
+            position: absolute;
+            top: calc(100% + 0.7rem);
+            right: 0;
+            width: 11.75rem;
+            padding: 0.45rem;
+            margin: 0;
+            list-style: none;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 1rem;
+            background: rgba(19, 24, 34, 0.94);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-0.5rem) scale(0.97);
+            transform-origin: top right;
+            transition: opacity 0.2s var(--ease-smooth), transform 0.2s var(--ease-smooth), visibility 0.2s;
+        }
+
+        .language-switcher.is-open .language-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+        }
+
+        .language-option {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.72rem 0.8rem;
+            border-radius: 0.7rem;
+            color: rgba(255, 255, 255, 0.72);
+            font-size: 0.88rem;
+            text-align: left;
+            transition: color 0.2s var(--ease-smooth), background 0.2s var(--ease-smooth);
+        }
+
+        .language-option:hover,
+        .language-option:focus-visible,
+        .language-option[aria-checked="true"] {
+            color: var(--color-white);
+            background: rgba(200, 169, 110, 0.16);
+            outline: none;
+        }
+
+        .language-option small {
+            color: var(--color-gold-light);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        html[lang="th"] .menu-label,
+        html[lang="zh-CN"] .menu-label,
+        html[lang="th"] .section-eyebrow,
+        html[lang="zh-CN"] .section-eyebrow,
+        html[lang="th"] .card-tag,
+        html[lang="zh-CN"] .card-tag {
+            letter-spacing: 0.04em;
+            text-transform: none;
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem 0;
+            position: relative;
+        }
+
+        .hero-label {
+            font-size: 0.65rem;
+            letter-spacing: 0.45em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.75);
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            width: 100%;
+            display: block;
+            animation: fadeSlideUp 1s var(--ease-smooth) 0.2s both;
+            transition: opacity 0.4s var(--ease-smooth), transform 0.4s var(--ease-smooth);
+        }
+
+        .hero-title {
+            font-family: var(--font-title);
+            font-size: clamp(5rem, 16vw, 18rem);
+            font-weight: 600;
+            line-height: 0.82;
+            letter-spacing: -0.02em;
+            color: rgba(255, 255, 255, 0.95);
+            text-shadow: 0 4px 60px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            width: 100%;
+            display: block;
+            animation: fadeSlideUp 1.2s var(--ease-smooth) 0.4s both;
+            margin-bottom: 0.15em;
+        }
+
+        .hero-subtitle {
+            font-family: var(--font-subtitle);
+            font-size: clamp(1.5rem, 4vw, 3.2rem);
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            width: 100%;
+            display: block;
+            margin-top: -0.3em;
+            animation: fadeSlideUp 1.2s var(--ease-smooth) 0.6s both;
+            transition: opacity 0.4s var(--ease-smooth), transform 0.4s var(--ease-smooth);
+        }
+
+        .text-fade-out {
+            opacity: 0 !important;
+            transform: translateY(10px) !important;
+        }
+
+        .bg-fade-out {
+            opacity: 0.2 !important;
+        }
+
+        .hero-sparkles {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            margin-top: 1.5rem;
+            color: var(--color-gold-light);
+            animation: fadeSlideUp 1.2s var(--ease-smooth) 0.8s both;
+        }
+
+        .hero-sparkles i:nth-child(2) {
+            font-size: 1.5rem;
+            margin-top: -0.5rem;
+        }
+
+        /* CTA Button */
+        .hero-cta {
+            margin-top: 2.5rem;
+            animation: fadeSlideUp 1.2s var(--ease-smooth) 1s both;
+        }
+
+        .explore-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: var(--radius-full);
+            color: var(--color-white);
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: all 0.4s var(--ease-smooth);
+            cursor: pointer;
+        }
+
+        .explore-btn:hover {
+            background: rgba(255, 255, 255, 0.18);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .explore-btn:active {
+            transform: translateY(0) scale(0.97);
+        }
+
+        .explore-btn i {
+            font-size: 1.1rem;
+            transition: transform 0.3s var(--ease-smooth);
+        }
+
+        .explore-btn:hover i {
+            transform: translateY(3px);
+        }
+
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== LEFT SIDEBAR: Thumbnails ===== */
+        .sidebar-thumbs {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            display: none;
+            flex-direction: column;
+            gap: 0.75rem;
+            z-index: 20;
+        }
+
+        @media (min-width: 640px) {
+            .sidebar-thumbs {
+                display: flex;
+            }
+        }
+
+        .thumb-item {
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1.5px solid rgba(255, 255, 255, 0.25);
+            cursor: pointer;
+            opacity: 0.7;
+            transition: all 0.4s var(--ease-smooth);
+        }
+
+        .thumb-item:hover {
+            opacity: 1;
+            border-color: rgba(255, 255, 255, 0.8);
+            transform: scale(1.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .thumb-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @media (min-width: 768px) {
+            .thumb-item {
+                width: 4rem;
+                height: 4rem;
+            }
+        }
+
+        /* ===== SITE NAVIGATION ===== */
+        .site-nav {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: flex-end;
+            background: rgba(5, 8, 13, 0.62);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s var(--ease-smooth);
+        }
+
+        .site-nav.is-open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .site-nav-panel {
+            width: min(100%, 31rem);
+            min-height: 100%;
+            padding: clamp(1.5rem, 5vw, 3.5rem);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            background: linear-gradient(145deg, #182131 0%, #0d1117 75%);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: -18px 0 60px rgba(0, 0, 0, 0.3);
+            transform: translateX(100%);
+            transition: transform 0.4s var(--ease-smooth);
+        }
+
+        .site-nav.is-open .site-nav-panel {
+            transform: translateX(0);
+        }
+
+        .site-nav-close {
+            width: 2.75rem;
+            height: 2.75rem;
+            margin-left: auto;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: var(--radius-full);
+            color: var(--color-white);
+            font-size: 1.15rem;
+            transition: background 0.25s var(--ease-smooth), transform 0.25s var(--ease-smooth);
+        }
+
+        .site-nav-close:hover,
+        .site-nav-close:focus-visible {
+            background: rgba(200, 169, 110, 0.2);
+            transform: rotate(90deg);
+            outline: none;
+        }
+
+        .site-nav-eyebrow {
+            margin-top: auto;
+            color: var(--color-gold);
+            font-size: 0.7rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+        }
+
+        .site-nav-links {
+            width: 100%;
+            display: grid;
+            gap: 0.35rem;
+            margin: 1.25rem 0 auto;
+        }
+
+        .site-nav-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.95rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.88);
+            font-family: var(--font-subtitle);
+            font-size: clamp(1.4rem, 5vw, 2rem);
+            transition: color 0.25s var(--ease-smooth), padding 0.25s var(--ease-smooth);
+        }
+
+        .site-nav-link i {
+            color: var(--color-gold);
+            font-size: 1.1rem;
+        }
+
+        .site-nav-link:hover,
+        .site-nav-link:focus-visible {
+            padding-left: 0.5rem;
+            color: var(--color-gold-light);
+            outline: none;
+        }
+
+        body.nav-open {
+            overflow: hidden;
+        }
+
+        /* ===== ROTATING CIRCLE TEXT ===== */
+        .rotating-badge {
+            position: absolute;
+            right: 8%;
+            top: 35%;
+            width: 9rem;
+            height: 9rem;
+            opacity: 0.45;
+            display: none;
+            animation: fadeIn 2s var(--ease-smooth) 1.2s both;
+        }
+
+        @media (min-width: 1024px) {
+            .rotating-badge {
+                display: block;
+            }
+        }
+
+        .rotating-badge svg {
+            width: 100%;
+            height: 100%;
+            animation: spin 25s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 0.45;
+            }
+        }
+
+        /* ===== FIND JOURNEY BADGE ===== */
+        .journey-badge {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            display: none;
+            align-items: center;
+            gap: 0.75rem;
+            z-index: 20;
+        }
+
+        @media (min-width: 1024px) {
+            .journey-badge {
+                display: flex;
+            }
+        }
+
+        .journey-badge i {
+            font-size: 2rem;
+            color: var(--color-gold);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 0.7;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.1);
+            }
+        }
+
+        .journey-text {
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            line-height: 1.6;
+        }
+
+        /* ===== SCROLL INDICATOR ===== */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.6rem;
+            animation: fadeSlideUp 1.2s var(--ease-smooth) 1.4s both;
+        }
+
+        .scroll-indicator span {
+            font-size: 0.55rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .scroll-line {
+            width: 1px;
+            height: 2.5rem;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.5), transparent);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scroll-line::after {
+            content: '';
+            position: absolute;
+            top: -100%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, var(--color-gold-light), transparent);
+            animation: scrollDown 2s ease-in-out infinite;
+        }
+
+        @keyframes scrollDown {
+            0% {
+                top: -100%;
+            }
+
+            100% {
+                top: 100%;
+            }
+        }
+
+        /* ===== CORNER DECORATIONS ===== */
+        .corner-decoration {
+            position: fixed;
+            width: 150px;
+            height: 150px;
+            pointer-events: none;
+            z-index: 5;
+            opacity: 0.04;
+        }
+
+        .corner-decoration.top-left {
+            top: 0;
+            left: 0;
+            border-top: 1px solid white;
+            border-left: 1px solid white;
+        }
+
+        .corner-decoration.bottom-right {
+            bottom: 0;
+            right: 0;
+            border-bottom: 1px solid white;
+            border-right: 1px solid white;
+        }
+
+        /* ===== HIGHLIGHTS SECTION ===== */
+        .highlights-section {
+            position: relative;
+            z-index: 10;
+            background: linear-gradient(180deg, #000 0%, var(--color-dark) 15%, var(--color-dark) 85%, #0d1117 100%);
+            padding: 6rem 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .highlights-section {
+                padding: 8rem 2.5rem;
+            }
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-eyebrow {
+            font-size: 0.65rem;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            color: var(--color-gold);
+            font-weight: 500;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .section-eyebrow::before,
+        .section-eyebrow::after {
+            content: '';
+            width: 2rem;
+            height: 1px;
+            background: var(--color-gold);
+            opacity: 0.4;
+        }
+
+        .section-title {
+            font-family: var(--font-subtitle);
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            font-weight: 500;
+            color: var(--color-white);
+            line-height: 1.3;
+        }
+
+        .section-title em {
+            font-style: italic;
+            color: var(--color-gold-light);
+        }
+
+        .section-desc {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.55);
+            max-width: 36rem;
+            margin: 1rem auto 0;
+            line-height: 1.7;
+        }
+
+        /* Highlight Cards Grid */
+        .highlights-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            max-width: 72rem;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 640px) {
+            .highlights-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .highlights-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Highlight Card */
+        .highlight-card {
+            position: relative;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            aspect-ratio: 3 / 4;
+            cursor: pointer;
+            group: true;
+        }
+
+        .highlight-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.8s var(--ease-smooth), filter 0.6s var(--ease-smooth);
+        }
+
+        .highlight-card:hover img {
+            transform: scale(1.08);
+            filter: brightness(0.7);
+        }
+
+        /* Card Overlay */
+        .card-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(0deg,
+                    rgba(0, 0, 0, 0.85) 0%,
+                    rgba(0, 0, 0, 0.2) 40%,
+                    transparent 60%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 1.8rem;
+            transition: background 0.5s var(--ease-smooth);
+        }
+
+        .highlight-card:hover .card-overlay {
+            background: linear-gradient(0deg,
+                    rgba(0, 0, 0, 0.9) 0%,
+                    rgba(0, 0, 0, 0.35) 50%,
+                    rgba(0, 0, 0, 0.1) 100%);
+        }
+
+        .card-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.6rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--color-gold-light);
+            font-weight: 500;
+            margin-bottom: 0.6rem;
+        }
+
+        .card-tag i {
+            font-size: 0.8rem;
+        }
+
+        .card-title {
+            font-family: var(--font-subtitle);
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: var(--color-white);
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .card-desc {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.6;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: all 0.5s var(--ease-smooth);
+        }
+
+        .highlight-card:hover .card-desc {
+            max-height: 6rem;
+            opacity: 1;
+            margin-bottom: 0.75rem;
+        }
+
+        @media (hover: none) {
+            .card-desc {
+                max-height: 6rem;
+                opacity: 1;
+                margin-bottom: 0.75rem;
+            }
+        }
+
+        .card-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            color: var(--color-gold-light);
+            transition: all 0.3s var(--ease-smooth);
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .highlight-card:hover .card-link {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .card-link:hover {
+            gap: 0.75rem;
+        }
+
+        .card-link i {
+            transition: transform 0.3s var(--ease-smooth);
+        }
+
+        .card-link:hover i {
+            transform: translateX(4px);
+        }
+
+        /* ===== STATS BAR ===== */
+        .stats-section {
+            position: relative;
+            z-index: 10;
+            background: #0d1117;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .stats-bar {
+            max-width: 72rem;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0;
+        }
+
+        @media (min-width: 768px) {
+            .stats-bar {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .stat-item {
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            position: relative;
+            transition: background 0.4s var(--ease-smooth);
+        }
+
+        .stat-item:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        /* Vertical dividers */
+        .stat-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 25%;
+            height: 50%;
+            width: 1px;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        /* Hide odd dividers on mobile 2-col */
+        @media (max-width: 767px) {
+            .stat-item:nth-child(2)::after {
+                display: none;
+            }
+
+            .stat-item:nth-child(2),
+            .stat-item:nth-child(1) {
+                border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            }
+        }
+
+        .stat-number {
+            font-family: var(--font-title);
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            font-weight: 600;
+            color: var(--color-gold);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-number span {
+            font-family: var(--font-ui);
+            font-size: 0.6em;
+            font-weight: 400;
+            color: var(--color-gold-light);
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: 400;
+        }
+
+        /* ===== FOOTER ===== */
+        .site-footer {
+            position: relative;
+            z-index: 10;
+            background: #0d1117;
+            padding: 3rem 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .footer-inner {
+            max-width: 72rem;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .footer-inner {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .footer-logo {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .footer-logo i {
+            font-size: 1.1rem;
+            color: var(--color-gold);
+        }
+
+        .footer-brand-text {
+            font-family: var(--font-title);
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-link {
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            color: rgba(255, 255, 255, 0.35);
+            transition: color 0.3s var(--ease-smooth);
+        }
+
+        .footer-link:hover {
+            color: var(--color-white);
+        }
+
+        .footer-credit {
+            max-width: 72rem;
+            margin: 2rem auto 0;
+            padding-top: 1.25rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.58);
+            font-size: 0.78rem;
+            line-height: 1.7;
+            text-align: center;
+        }
+
+        /* ===== SCROLL-REVEAL ANIMATION ===== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s var(--ease-smooth), transform 0.8s var(--ease-smooth);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-delay-1 {
+            transition-delay: 0.15s;
+        }
+
+        .reveal-delay-2 {
+            transition-delay: 0.3s;
+        }
+
+        .reveal-delay-3 {
+            transition-delay: 0.45s;
+        }
+
+        /* ===== DISTRICT MAP SECTION ===== */
+        .district-map-section {
+            position: relative;
+            z-index: 10;
+            background: linear-gradient(180deg, #0d1117 0%, #0a0f1a 30%, #0d1420 70%, #0d1117 100%);
+            padding: 6rem 1.5rem;
+            overflow: hidden;
+        }
+
+        @media (min-width: 768px) {
+            .district-map-section {
+                padding: 8rem 2.5rem;
+            }
+        }
+
+        .district-map-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(200, 169, 110, 0.06) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .map-container {
+            max-width: 72rem;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3rem;
+        }
+
+        @media (min-width: 1024px) {
+            .map-container {
+                flex-direction: row;
+                align-items: flex-start;
+                gap: 4rem;
+            }
+        }
+
+        .map-visual {
+            position: relative;
+            width: 100%;
+            max-width: 480px;
+            flex-shrink: 0;
+        }
+
+        @media (min-width: 1024px) {
+            .map-visual {
+                max-width: 520px;
+            }
+        }
+
+        .map-svg-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1.35;
+            filter: drop-shadow(0 0 40px rgba(200, 169, 110, 0.08));
+        }
+
+        .map-svg-wrapper svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .district-path {
+            fill: rgba(200, 169, 110, 0.14);
+            stroke: rgba(200, 169, 110, 0.52);
+            stroke-width: 1.5;
+            cursor: pointer;
+            transition: fill 0.4s var(--ease-smooth), stroke 0.4s var(--ease-smooth), filter 0.4s var(--ease-smooth);
+        }
+
+        .district-path:hover {
+            fill: rgba(200, 169, 110, 0.22);
+            stroke: rgba(200, 169, 110, 0.8);
+            filter: drop-shadow(0 0 12px rgba(200, 169, 110, 0.25));
+        }
+
+        .district-path.active {
+            fill: rgba(200, 169, 110, 0.3);
+            stroke: var(--color-gold);
+            stroke-width: 2;
+            filter: drop-shadow(0 0 20px rgba(200, 169, 110, 0.35));
+        }
+
+        .district-path:focus {
+            outline: none;
+        }
+
+        .district-path:focus-visible {
+            outline: none;
+            stroke: var(--color-white);
+            stroke-width: 2.5;
+            filter: drop-shadow(0 0 16px rgba(232, 213, 168, 0.8));
+        }
+
+        .district-label {
+            fill: rgba(255, 255, 255, 0.75);
+            font-family: var(--font-ui);
+            font-size: 7.5px;
+            font-weight: 500;
+            text-anchor: middle;
+            pointer-events: none;
+            transition: fill 0.3s var(--ease-smooth);
+            letter-spacing: 0.02em;
+        }
+
+        .district-label.active {
+            fill: var(--color-gold-light);
+            font-weight: 600;
+        }
+
+        .district-label-en {
+            fill: rgba(255, 255, 255, 0.35);
+            font-family: var(--font-ui);
+            font-size: 4.5px;
+            font-weight: 400;
+            text-anchor: middle;
+            pointer-events: none;
+            transition: fill 0.3s var(--ease-smooth);
+        }
+
+        .district-label-en.active {
+            fill: rgba(200, 169, 110, 0.7);
+        }
+
+        /* Map compass */
+        .map-compass {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            width: 3rem;
+            height: 3rem;
+            opacity: 0.3;
+        }
+
+        .map-compass svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .map-helper-text {
+            margin: 0.8rem auto 0;
+            max-width: 25rem;
+            color: rgba(255, 255, 255, 0.64);
+            font-size: 0.82rem;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+        /* Info panel */
+        .map-info-panel {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .map-info-title {
+            font-family: var(--font-title);
+            font-size: 1.2rem;
+            letter-spacing: 0.2em;
+            color: var(--color-gold);
+            margin-bottom: 0.5rem;
+        }
+
+        .map-info-amphoe {
+            font-family: var(--font-subtitle);
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 500;
+            color: var(--color-white);
+            line-height: 1.2;
+            margin-bottom: 0.75rem;
+            transition: opacity 0.4s var(--ease-smooth), transform 0.4s var(--ease-smooth);
+        }
+
+        .map-info-amphoe-en {
+            font-family: var(--font-ui);
+            font-size: 1rem;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 0.05em;
+            margin-bottom: 1.5rem;
+        }
+
+        .map-info-desc {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.55);
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            max-width: 32rem;
+            transition: opacity 0.4s var(--ease-smooth);
+        }
+
+        .map-info-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .map-stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+            transition: background 0.3s var(--ease-smooth), border-color 0.3s var(--ease-smooth);
+        }
+
+        .map-stat-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(200, 169, 110, 0.2);
+        }
+
+        .map-stat-value {
+            font-family: var(--font-title);
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--color-gold);
+            margin-bottom: 0.25rem;
+        }
+
+        .map-stat-label {
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.35);
+        }
+
+        .map-explore-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.9rem 2rem;
+            background: linear-gradient(135deg, rgba(200, 169, 110, 0.15), rgba(200, 169, 110, 0.05));
+            border: 1px solid rgba(200, 169, 110, 0.3);
+            border-radius: var(--radius-full);
+            color: var(--color-gold-light);
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.4s var(--ease-smooth);
+            cursor: pointer;
+        }
+
+        .map-explore-btn:hover {
+            background: linear-gradient(135deg, rgba(200, 169, 110, 0.25), rgba(200, 169, 110, 0.1));
+            border-color: var(--color-gold);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(200, 169, 110, 0.15);
+        }
+
+        .map-explore-btn i {
+            font-size: 1rem;
+            transition: transform 0.3s var(--ease-smooth);
+        }
+
+        .map-explore-btn:hover i {
+            transform: translateX(4px);
+        }
+
+        .map-explore-btn[disabled] {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .map-explore-btn[disabled]:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* District quick-nav pills */
+        .district-nav-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            justify-content: center;
+        }
+
+        @media (min-width: 1024px) {
+            .district-nav-pills {
+                justify-content: flex-start;
+            }
+        }
+
+        .district-pill {
+            padding: 0.4rem 1rem;
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            color: rgba(255, 255, 255, 0.45);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all 0.3s var(--ease-smooth);
+        }
+
+        .district-pill:hover {
+            color: var(--color-gold-light);
+            background: rgba(200, 169, 110, 0.08);
+            border-color: rgba(200, 169, 110, 0.25);
+        }
+
+        .district-pill.active {
+            color: var(--color-gold);
+            background: rgba(200, 169, 110, 0.12);
+            border-color: rgba(200, 169, 110, 0.4);
+        }
+
+        /* ===== RESPONSIVE FINE-TUNING ===== */
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: clamp(3.5rem, 20vw, 6rem);
+            }
+
+            .hero-subtitle {
+                font-size: 1.3rem;
+            }
+
+            .hero-label {
+                font-size: 0.55rem;
+                letter-spacing: 0.3em;
+            }
+
+            .logo-circle {
+                width: 3.25rem;
+                height: 3.25rem;
+            }
+
+            .logo-circle i {
+                font-size: 1.3rem;
+            }
+
+            .explore-btn {
+                padding: 0.85rem 1.8rem;
+                font-size: 0.75rem;
+            }
+        }
+
+        /* ===== RECOMMENDED PLACES ===== */
+        #recommended-places {
+            display: none;
+            margin-top: 2rem;
+        }
+        #recommended-places.visible { display: block; }
+
+        .rp-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 1.5rem;
+        }
+        .rp-header i { color: var(--color-gold); font-size: 1rem; }
+        .rp-title {
+            font-size: 0.65rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--color-gold);
+            font-weight: 500;
+        }
+
+        /* ── ชื่อ + ปุ่มเลื่อน card ── */
+        .rp-place-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            min-height: 1.8rem;
+        }
+        .rp-place-name {
+            font-family: var(--font-subtitle);
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--color-white);
+            flex: 1;
+            line-height: 1.3;
+        }
+        .rp-card-nav {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            flex-shrink: 0;
+            margin-left: 0.75rem;
+        }
+        .rp-card-btn {
+            width: 1.8rem;
+            height: 1.8rem;
+            border-radius: var(--radius-full);
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: rgba(255,255,255,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s, color 0.2s;
+        }
+        .rp-card-btn:hover {
+            background: rgba(200,169,110,0.2);
+            border-color: rgba(200,169,110,0.5);
+            color: var(--color-gold-light);
+        }
+        .rp-card-counter {
+            font-size: 0.65rem;
+            color: rgba(255,255,255,0.35);
+            letter-spacing: 0.05em;
+            min-width: 2rem;
+            text-align: center;
+        }
+
+        /* ── Carousel viewport ── */
+        .rp-carousel {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+        .rp-cards-track {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding-left: 32px;   /* peek ซ้าย */
+            padding-right: 32px;  /* peek ขวา */
+            transition: transform 0.45s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        /* ── Card ── */
+        .rp-card {
+            position: relative;
+            flex-shrink: 0;
+            /* กว้างเท่ากับ viewport – 2 ข้างที่จาง */
+            width: calc(100% - 4rem);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            aspect-ratio: 4/3;
+            transition: opacity 0.4s ease, transform 0.45s cubic-bezier(0.4,0,0.2,1);
+            opacity: 0.35;
+            transform: scale(0.93);
+            cursor: pointer;
+        }
+        .rp-card.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .rp-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.6s ease;
+        }
+        .rp-card.active:hover img { transform: scale(1.04); }
+
+        /* ── ปุ่มเปลี่ยนรูปบน card ── */
+        .rp-img-prev, .rp-img-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            width: 1.9rem;
+            height: 1.9rem;
+            border-radius: var(--radius-full);
+            background: rgba(0,0,0,0.55);
+            border: 1px solid rgba(255,255,255,0.22);
+            color: #fff;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.25s, background 0.2s;
+        }
+        .rp-card.active:hover .rp-img-prev,
+        .rp-card.active:hover .rp-img-next { opacity: 1; }
+        .rp-img-prev:hover, .rp-img-next:hover {
+            background: rgba(200,169,110,0.75);
+            border-color: var(--color-gold);
+        }
+        .rp-img-prev { left: 0.5rem; }
+        .rp-img-next { right: 0.5rem; }
+
+        /* counter รูป */
+        .rp-img-counter {
+            position: absolute;
+            bottom: 0.5rem;
+            right: 0.5rem;
+            background: rgba(0,0,0,0.6);
+            color: rgba(255,255,255,0.85);
+            font-size: 0.58rem;
+            padding: 0.15rem 0.4rem;
+            border-radius: var(--radius-full);
+            font-family: var(--font-ui);
+            z-index: 10;
+        }
+
+        /* ── Info (ข้างล่าง carousel) ── */
+        .rp-info {
+            margin-top: 1rem;
+            padding: 0 0.25rem;
+        }
+        .rp-desc {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.55);
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+        .rp-actions {
+            display: flex;
+            gap: 0.6rem;
+        }
+        .rp-btn {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            padding: 0.55rem 0.75rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.72rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            font-family: var(--font-ui);
+            transition: all 0.25s var(--ease-smooth);
+        }
+        .rp-btn i { font-size: 0.85rem; }
+        .rp-btn-map {
+            background: linear-gradient(135deg, rgba(200,169,110,0.16), rgba(200,169,110,0.06));
+            border: 1px solid rgba(200,169,110,0.32);
+            color: var(--color-gold-light);
+        }
+        .rp-btn-map:hover {
+            background: linear-gradient(135deg, rgba(200,169,110,0.3), rgba(200,169,110,0.14));
+            border-color: var(--color-gold);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(200,169,110,0.18);
+        }
+        .rp-btn-review {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.65);
+        }
+        .rp-btn-review:hover {
+            background: rgba(255,255,255,0.09);
+            border-color: rgba(255,255,255,0.28);
+            color: #fff;
+            transform: translateY(-1px);
+        }
+        @media (max-width: 480px) {
+            .rp-actions { flex-direction: column; }
+            .rp-card { width: calc(100% - 2.5rem); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                scroll-behavior: auto !important;
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* ===== SCROLL PROGRESS BAR ===== */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--color-gold), var(--color-gold-light), var(--color-gold));
+            z-index: 9999;
+            box-shadow: 0 0 10px rgba(200, 169, 110, 0.5);
+            pointer-events: none;
+        }
+
+        /* ===== PAGE LOADER ===== */
+        .page-loader {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background: #0a0f1a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        .page-loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .loader-logo {
+            width: 5rem;
+            height: 5rem;
+            background: rgba(200, 169, 110, 0.08);
+            border: 2px solid rgba(200, 169, 110, 0.25);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: loaderPulse 1.8s ease-in-out infinite;
+        }
+
+        .loader-logo i {
+            font-size: 2rem;
+            color: var(--color-gold);
+        }
+
+        .loader-text {
+            margin-top: 1.5rem;
+            font-family: var(--font-title);
+            font-size: 1.1rem;
+            letter-spacing: 0.35em;
+            color: var(--color-gold-light);
+            opacity: 0.7;
+        }
+
+        .loader-bar {
+            margin-top: 1.5rem;
+            width: 120px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .loader-bar::after {
+            content: '';
+            display: block;
+            width: 40%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+            border-radius: 2px;
+            animation: loaderSlide 1.2s ease-in-out infinite;
+        }
+
+        @keyframes loaderPulse {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.08); opacity: 1; }
+        }
+
+        @keyframes loaderSlide {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(400%); }
+        }
+
+        /* ===== STICKY HEADER ===== */
+        .sticky-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 90;
+            padding: 0.65rem 1.5rem;
+            background: rgba(10, 15, 26, 0.88);
+            backdrop-filter: blur(20px) saturate(1.2);
+            -webkit-backdrop-filter: blur(20px) saturate(1.2);
+            border-bottom: 1px solid rgba(200, 169, 110, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transform: translateY(-100%);
+            transition: transform 0.45s var(--ease-smooth);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        .sticky-header.visible {
+            transform: translateY(0);
+        }
+
+        .sticky-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .sticky-logo {
+            width: 2rem;
+            height: 2rem;
+            background: rgba(200, 169, 110, 0.12);
+            border: 1px solid rgba(200, 169, 110, 0.25);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sticky-logo i {
+            font-size: 0.9rem;
+            color: var(--color-gold);
+        }
+
+        .sticky-title {
+            font-family: var(--font-title);
+            font-size: 0.8rem;
+            letter-spacing: 0.15em;
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .sticky-nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .sticky-nav-link {
+            font-size: 0.68rem;
+            letter-spacing: 0.1em;
+            color: rgba(255, 255, 255, 0.45);
+            transition: color 0.3s ease;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .sticky-nav-link:hover {
+            color: var(--color-gold-light);
+        }
+
+        @media (max-width: 768px) {
+            .sticky-nav-links { display: none; }
+        }
+
+        /* ===== FLOATING PARTICLES ===== */
+        .hero-particles {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(200, 169, 110, 0.5);
+            box-shadow: 0 0 6px rgba(200, 169, 110, 0.3);
+            animation: particleFloat linear infinite;
+        }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            90% { opacity: 0.8; }
+            100% {
+                transform: translateY(-100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* ===== BACK TO TOP BUTTON ===== */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 80;
+            width: 3rem;
+            height: 3rem;
+            background: rgba(200, 169, 110, 0.12);
+            border: 1px solid rgba(200, 169, 110, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-gold-light);
+            font-size: 1.1rem;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: all 0.4s var(--ease-smooth);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .back-to-top:hover {
+            background: rgba(200, 169, 110, 0.25);
+            border-color: var(--color-gold);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(200, 169, 110, 0.2);
+        }
+
+        .back-to-top:active {
+            transform: translateY(0) scale(0.95);
+        }
+
+        /* ===== SECTION WAVE DIVIDERS ===== */
+        .section-divider {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+            z-index: 10;
+            margin-top: -1px;
+        }
+
+        .section-divider svg {
+            display: block;
+            width: 100%;
+            height: 60px;
+        }
+
+        @media (min-width: 768px) {
+            .section-divider svg { height: 80px; }
+        }
+
+        /* ===== LIGHTBOX ===== */
+        .lightbox-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            background: rgba(0, 0, 0, 0.94);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+
+        .lightbox-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .lightbox-content {
+            position: relative;
+            max-width: 90vw;
+            max-height: 85vh;
+            transform: scale(0.92) translateY(20px);
+            transition: transform 0.45s var(--ease-bounce);
+        }
+
+        .lightbox-overlay.active .lightbox-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .lightbox-content img {
+            max-width: 100%;
+            max-height: 70vh;
+            object-fit: contain;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .lightbox-info {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .lightbox-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.6rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--color-gold);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .lightbox-title {
+            font-family: var(--font-subtitle);
+            font-size: 1.4rem;
+            color: var(--color-white);
+            margin-bottom: 0.5rem;
+        }
+
+        .lightbox-desc {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+            max-width: 32rem;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: -3.5rem;
+            right: 0;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .lightbox-close:hover {
+            background: rgba(200, 169, 110, 0.25);
+            border-color: var(--color-gold);
+            transform: rotate(90deg);
+        }
+
+        body.lightbox-open { overflow: hidden; }
+
+        /* ===== MAP TOOLTIP ===== */
+        .map-tooltip {
+            position: absolute;
+            padding: 0.45rem 0.9rem;
+            background: rgba(10, 15, 26, 0.95);
+            border: 1px solid rgba(200, 169, 110, 0.3);
+            border-radius: 0.5rem;
+            color: var(--color-gold-light);
+            font-family: var(--font-ui);
+            font-size: 0.75rem;
+            font-weight: 500;
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(5px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            white-space: nowrap;
+            z-index: 30;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .map-tooltip.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ===== ENHANCED FOOTER (override) ===== */
+        .footer-grid {
+            max-width: 72rem;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2.5rem;
+            padding-bottom: 2.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        @media (min-width: 768px) {
+            .footer-grid {
+                grid-template-columns: 2fr 1fr 1fr;
+            }
+        }
+
+        .footer-about-text {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.38);
+            line-height: 1.75;
+            margin-top: 1rem;
+            max-width: 24rem;
+        }
+
+        .footer-col-title {
+            font-size: 0.62rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--color-gold);
+            font-weight: 500;
+            margin-bottom: 1.2rem;
+        }
+
+        .footer-col-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+        }
+
+        .footer-col-link {
+            font-size: 0.82rem;
+            color: rgba(255, 255, 255, 0.4);
+            transition: color 0.3s ease, padding-left 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        a.footer-col-link:hover {
+            color: var(--color-gold-light);
+            padding-left: 0.3rem;
+        }
+
+        .footer-col-link i {
+            font-size: 0.85rem;
+            color: var(--color-gold);
+            opacity: 0.5;
+        }
+
+        .footer-socials {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1.2rem;
+        }
+
+        .footer-social-btn {
+            width: 2.2rem;
+            height: 2.2rem;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.35);
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .footer-social-btn:hover {
+            background: rgba(200, 169, 110, 0.12);
+            border-color: rgba(200, 169, 110, 0.35);
+            color: var(--color-gold-light);
+            transform: translateY(-2px);
+        }
+
+        .footer-bottom {
+            max-width: 72rem;
+            margin: 1.5rem auto 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            text-align: center;
+        }
+
+        @media (min-width: 768px) {
+            .footer-bottom {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        }
+
+        .footer-copyright {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.2);
+            letter-spacing: 0.05em;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Decorative Corner Lines -->
+    <div class="corner-decoration top-left"></div>
+    <div class="corner-decoration bottom-right"></div>
+
+    <nav class="site-nav" id="site-nav" aria-label="เมนูหลัก" data-i18n-aria="nav-aria" aria-hidden="true">
+        <div class="site-nav-panel">
+            <button class="site-nav-close" id="menu-close" type="button" aria-label="ปิดเมนู" data-i18n-aria="close-menu-aria">
+                <i class="ph ph-x"></i>
+            </button>
+            <p class="site-nav-eyebrow">PHRAE</p>
+            <div class="site-nav-links">
+                <a class="site-nav-link" href="#hero" data-menu-link><span data-i18n="nav-home">หน้าแรก</span><i class="ph ph-arrow-up-right"></i></a>
+                <a class="site-nav-link" href="#highlights" data-menu-link><span data-i18n="nav-highlights">สถานที่ห้ามพลาด</span><i class="ph ph-arrow-up-right"></i></a>
+                <a class="site-nav-link" href="#district-map" data-menu-link><span data-i18n="nav-districts">สำรวจอำเภอ</span><i class="ph ph-arrow-up-right"></i></a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== HERO SCREEN ===== -->
+    <div class="hero-screen">
+        <!-- Background -->
+        <div class="hero-bg">
+            <img id="hero-bg-img" src="phrae/วัดพระธาตุดอยเล็ง.jpeg" alt="PHRAE Landscape of Phrae, Northern Thailand">
+        </div>
+
+        <!-- Content -->
+        <div class="content-layer">
+            <!-- HEADER -->
+            <header class="site-header" id="site-header">
+                <button class="menu-btn" id="menu-btn" type="button" aria-label="Open navigation menu" data-i18n-aria="menu-aria" aria-expanded="false" aria-controls="site-nav">
+                    <div class="menu-icon">
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <span class="menu-label" data-i18n="menu">เมนู</span>
+                </button>
+
+                <div class="logo-container">
+                    <a href="#hero" class="logo-circle" id="logo" aria-label="PHRAE Home">
+                        <i class="ph-fill ph-sun-horizon"></i>
+                    </a>
+                </div>
+
+                <div class="header-actions">
+                    <div class="language-switcher" id="language-switcher">
+                        <button class="icon-btn" id="btn-lang" type="button" aria-label="เปลี่ยนภาษา" data-i18n-aria="language-aria"
+                            aria-expanded="false" aria-controls="language-menu">
+                            <i class="ph ph-globe"></i>
+                        </button>
+                        <ul class="language-menu" id="language-menu" role="menu" aria-label="เลือกภาษา" data-i18n-aria="language-menu-aria">
+                            <li role="none"><button class="language-option" type="button" role="menuitemradio" aria-checked="true" data-lang="th" lang="th">ไทย <small>TH</small></button></li>
+                            <li role="none"><button class="language-option" type="button" role="menuitemradio" aria-checked="false" data-lang="en" lang="en">English <small>EN</small></button></li>
+                            <li role="none"><button class="language-option" type="button" role="menuitemradio" aria-checked="false" data-lang="zh-CN" lang="zh-CN">中文 <small>中文</small></button></li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+
+            <!-- HERO -->
+            <section class="hero-section" id="hero">
+                <!-- Left Thumbnails -->
+                <style>
+                    .thumb-nav-wrapper {
+                        position: absolute;
+                        left: 0;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        display: none;
+                        flex-direction: column;
+                        align-items: center;
+                        gap: 0.5rem;
+                        z-index: 20;
+                    }
+
+                    @media (min-width: 640px) {
+                        .thumb-nav-wrapper {
+                            display: flex;
+                        }
+                    }
+
+                    .sidebar-thumbs {
+                        position: static;
+                        transform: none;
+                        display: flex;
+                        max-height: calc((3.5rem * 4) + (0.75rem * 3));
+                        overflow-y: auto;
+                        scrollbar-width: none;
+                        -ms-overflow-style: none;
+                        scroll-behavior: smooth;
+                    }
+
+                    .sidebar-thumbs::-webkit-scrollbar {
+                        display: none;
+                    }
+
+                    .thumb-nav-btn {
+                        background: rgba(0, 0, 0, 0.5);
+                        color: #fff;
+                        width: 2rem;
+                        height: 2rem;
+                        border-radius: 50%;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        cursor: pointer;
+                        border: 1px solid rgba(255, 255, 255, 0.3);
+                        transition: all 0.2s;
+                    }
+
+                    .thumb-nav-btn:hover {
+                        background: var(--color-gold);
+                        border-color: var(--color-gold);
+                    }
+                </style>
+                <div class="thumb-nav-wrapper">
+                    <button class="thumb-nav-btn up" type="button" aria-label="Scroll up"
+                        onclick="document.querySelector('.sidebar-thumbs').scrollBy({top: -80, behavior: 'smooth'})">
+                        <i class="ph ph-caret-up"></i>
+                    </button>
+                    <nav class="sidebar-thumbs" aria-label="Gallery thumbnails">
+                        <div class="thumb-item" data-bg="phrae/วัดพระธาตุดอยเล็ง.jpeg" data-title="ดอยเล็ง" data-title-en="Doi Leng" data-title-zh-CN="多朗山" data-label="แพร่" data-label-en="PHRAE" data-label-zh-CN="帕府">
+                            <img src="phrae/วัดพระธาตุดอยเล็ง.jpeg" alt="ดอยเล็ง">
+                        </div>
+                        <div class="thumb-item" data-bg="phrae/แก่งหลวง.jpg" data-title="แก่งหลวง" data-title-en="Kaeng Luang" data-title-zh-CN="銮滩" data-label="มหัศจรรย์ธรรมชาติ" data-label-en="Natural Wonder" data-label-zh-CN="自然奇观">
+                            <img src="phrae/แก่งหลวง.jpg" alt="แก่งหลวง">
+                        </div>
+                        <div class="thumb-item" data-bg="phrae/ช่อแฮ.jpg" data-title="พระธาตุช่อแฮ" data-title-en="Phra That Cho Hae" data-title-zh-CN="却哈佛塔寺" data-label="วัดศักดิ์สิทธิ์" data-label-en="Sacred Temple" data-label-zh-CN="神圣寺庙">
+                            <img src="phrae/ช่อแฮ.jpg" alt="ช่อแฮ">
+                        </div>
+                        <div class="thumb-item" data-bg="phrae/แพะเมืองผี.jpg" data-title="แพะเมืองผี" data-title-en="Phae Mueang Phi" data-title-zh-CN="帕蒙披地质公园" data-label="อุทยานป่า" data-label-en="Forest Park" data-label-zh-CN="森林公园">
+                            <img src="phrae/แพะเมืองผี.jpg" alt="แพะเมืองผี">
+                        </div>
+                        <div class="thumb-item" data-bg="phrae/คุ้มเจ้า.jpg" data-title="คุ้มเจ้าหลวง" data-title-en="Khum Chao Luang" data-title-zh-CN="昭銮府邸" data-label="คุ้มประวัติศาสตร์" data-label-en="Historical Residence" data-label-zh-CN="历史府邸">
+                            <img src="phrae/คุ้มเจ้า.jpg" alt="คุ้มเจ้าหลวง">
+                        </div>
+                    </nav>
+                    <button class="thumb-nav-btn down" type="button" aria-label="Scroll down"
+                        onclick="document.querySelector('.sidebar-thumbs').scrollBy({top: 80, behavior: 'smooth'})">
+                        <i class="ph ph-caret-down"></i>
+                    </button>
+                </div>
+
+                <!-- Rotating Badge -->
+                <div class="rotating-badge" aria-hidden="true">
+                    <svg viewBox="0 0 100 100" overflow="visible">
+                        <path id="circlePath" d="M 50,50 m -38,0 a 38,38 0 1,1 76,0 a 38,38 0 1,1 -76,0"
+                            fill="transparent" />
+                        <text fill="white" font-size="7.5" font-weight="300" letter-spacing="2.5">
+                            <textPath href="#circlePath" startOffset="0%">
+                                PHRAE • PHRAE •
+                            </textPath>
+                        </text>
+                    </svg>
+                </div>
+
+                <!-- Hero Content -->
+                <p class="hero-label" id="hero-label">แพร่</p>
+                <h1 class="hero-title">PHRAE</h1>
+                <h2 class="hero-subtitle" id="hero-subtitle">ดอยเล็ง</h2>
+                <div class="hero-sparkles" aria-hidden="true">
+                    <i class="ph-fill ph-sparkle"></i>
+                    <i class="ph-fill ph-sparkle"></i>
+                    <i class="ph-fill ph-sparkle"></i>
+                </div>
+
+                <!-- CTA Button -->
+                <div class="hero-cta">
+                <a href="#highlights" class="explore-btn" id="btn-explore">
+                        <span data-i18n="explore">สำรวจเมืองแพร่</span>
+                        <i class="ph ph-arrow-down"></i>
+                    </a>
+                </div>
+
+                <!-- Journey Badge -->
+                <div class="journey-badge">
+                    <i class="ph-fill ph-sun"></i>
+                    <div class="journey-text">
+                        <span data-i18n-html="journey">ค้นหา<br>เส้นทางของคุณ</span>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="scroll-indicator">
+            <span data-i18n="scroll">เลื่อนลง</span>
+            <div class="scroll-line"></div>
+        </div>
+    </div>
+
+    <!-- ===== HIGHLIGHTS SECTION ===== -->
+    <section class="highlights-section" id="highlights">
+        <div class="section-header reveal">
+            <p class="section-eyebrow" data-i18n="highlights-eyebrow">สถานที่ห้ามพลาด</p>
+            <h2 class="section-title" data-i18n-html="highlights-title">ค้นพบ<em>ความงาม</em>ของแพร่</h2>
+            <p class="section-desc" data-i18n="highlights-desc">เมืองล้านนาโบราณท่ามกลางป่าไม้สักและขุนเขา แพร่มอบประสบการณ์วัฒนธรรมภาคเหนือที่งดงามและเป็นธรรมชาติ</p>
+        </div>
+
+        <style>
+            .highlights-carousel-wrapper {
+                position: relative;
+                max-width: 72rem;
+                margin: 0 auto;
+                display: flex;
+                align-items: center;
+            }
+
+            .highlights-grid {
+                display: flex !important;
+                overflow-x: auto;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+                gap: 1.5rem;
+                scroll-snap-type: x mandatory;
+                scroll-behavior: smooth;
+            }
+
+            .highlights-grid::-webkit-scrollbar {
+                display: none;
+            }
+
+            .highlight-card {
+                flex: 0 0 calc(100% - 1rem);
+                scroll-snap-align: start;
+            }
+
+            @media (min-width: 640px) {
+                .highlight-card {
+                    flex: 0 0 calc(50% - 0.75rem);
+                }
+            }
+
+            @media (min-width: 1024px) {
+                .highlight-card {
+                    flex: 0 0 calc(25% - 1.125rem);
+                }
+            }
+
+            .carousel-btn {
+                position: absolute;
+                z-index: 10;
+                background: rgba(0, 0, 0, 0.6);
+                color: #fff;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .carousel-btn:hover {
+                background: var(--color-gold);
+                border-color: var(--color-gold);
+            }
+
+            .carousel-btn.left {
+                left: -20px;
+            }
+
+            .carousel-btn.right {
+                right: -20px;
+            }
+
+            @media (max-width: 1100px) {
+                .carousel-btn.left {
+                    left: 10px;
+                }
+
+                .carousel-btn.right {
+                    right: 10px;
+                }
+            }
+
+        </style>
+        <div class="highlights-carousel-wrapper">
+            <button class="carousel-btn left" type="button" aria-label="Scroll left"
+                onclick="document.querySelector('.highlights-grid').scrollBy({left: -300, behavior: 'smooth'})">
+                <i class="ph ph-caret-left"></i>
+            </button>
+
+            <div class="highlights-grid">
+                <!-- Card 1: Doi Leng -->
+                <article class="highlight-card reveal reveal-delay-1">
+                    <img src="phrae/วัดพระธาตุดอยเล็ง.jpeg" alt="ดอยเล็ง">
+                    <div class="card-overlay">
+                        <span class="card-tag"><i class="ph-fill ph-mountains"></i> <span data-i18n="highlight-1-tag">แพร่</span></span>
+                        <h3 class="card-title" data-i18n="highlight-1-title">ดอยเล็ง</h3>
+                        <p class="card-desc" data-i18n="highlight-1-desc">จุดชมวิวทิวทัศน์ธรรมชาติและองค์พระธาตุที่สวยงาม</p>
+                    </div>
+                </article>
+
+                <!-- Card 2: Kaeng Luang -->
+                <article class="highlight-card reveal reveal-delay-2">
+                    <img src="phrae/แก่งหลวง.jpg" alt="แก่งหลวง">
+                    <div class="card-overlay">
+                        <span class="card-tag"><i class="ph-fill ph-water-drop"></i> <span data-i18n="highlight-2-tag">มหัศจรรย์ธรรมชาติ</span></span>
+                        <h3 class="card-title" data-i18n="highlight-2-title">แก่งหลวง</h3>
+                        <p class="card-desc" data-i18n="highlight-2-desc">แก่งหินสลับซับซ้อนตามลำน้ำยม แหล่งท่องเที่ยวทางธรรมชาติ</p>
+                    </div>
+                </article>
+
+                <!-- Card 3: Cho Hae -->
+                <article class="highlight-card reveal reveal-delay-3">
+                    <img src="phrae/ช่อแฮ.jpg" alt="ช่อแฮ">
+                    <div class="card-overlay">
+                        <span class="card-tag"><i class="ph-fill ph-star-four"></i> <span data-i18n="highlight-3-tag">วัดศักดิ์สิทธิ์</span></span>
+                        <h3 class="card-title" data-i18n="highlight-3-title">วัดพระธาตุช่อแฮ</h3>
+                        <p class="card-desc" data-i18n="highlight-3-desc">วัดศักดิ์สิทธิ์คู่บ้านคู่เมืองแพร่ที่มีพระธาตุสีทองอร่าม</p>
+                    </div>
+                </article>
+
+                <!-- Card 4: Phae Mueang Phi -->
+                <article class="highlight-card reveal reveal-delay-4">
+                    <img src="phrae/แพะเมืองผี.jpg" alt="แพะเมืองผี">
+                    <div class="card-overlay">
+                        <span class="card-tag"><i class="ph-fill ph-tree"></i> <span data-i18n="highlight-4-tag">อุทยานป่า</span></span>
+                        <h3 class="card-title" data-i18n="highlight-4-title">แพะเมืองผี</h3>
+                        <p class="card-desc" data-i18n="highlight-4-desc">ปรากฏการณ์ทางธรณีวิทยาที่สร้างเสาดินรูปร่างแปลกตา</p>
+                    </div>
+                </article>
+
+                <!-- Card 5: Khum Chao Luang -->
+                <article class="highlight-card reveal reveal-delay-5">
+                    <img src="phrae/คุ้มเจ้า.jpg" alt="คุ้มเจ้าหลวง">
+                    <div class="card-overlay">
+                        <span class="card-tag"><i class="ph-fill ph-buildings"></i> <span data-i18n="highlight-5-tag">คุ้มประวัติศาสตร์</span></span>
+                        <h3 class="card-title" data-i18n="highlight-5-title">คุ้มเจ้าหลวง</h3>
+                        <p class="card-desc" data-i18n="highlight-5-desc">สถาปัตยกรรมล้านนาผสมยุโรป อดีตที่ประทับของเจ้าผู้ครองนครแพร่</p>
+                    </div>
+                </article>
+            </div>
+
+            <button class="carousel-btn right" type="button" aria-label="Scroll right"
+                onclick="document.querySelector('.highlights-grid').scrollBy({left: 300, behavior: 'smooth'})">
+                <i class="ph ph-caret-right"></i>
+            </button>
+        </div>
+    </section>
+
+    <!-- ===== DISTRICT MAP SECTION ===== -->
+    <section class="district-map-section" id="district-map">
+        <div class="section-header reveal">
+            <p class="section-eyebrow" data-i18n="districts-eyebrow">สำรวจรายอำเภอ</p>
+            <h2 class="section-title" data-i18n-html="districts-title">8 อำเภอของ<em>จังหวัดแพร่</em></h2>
+            <p class="section-desc" data-i18n="districts-desc">สำรวจแต่ละอำเภอในจังหวัดแพร่ จากที่ราบลุ่มแม่น้ำยมไปจนถึงเทือกเขาสูง ค้นพบเสน่ห์ที่แตกต่างของแต่ละพื้นที่</p>
+        </div>
+
+        <div class="map-container">
+            <!-- SVG Map -->
+            <div class="map-visual reveal">
+                <div class="map-svg-wrapper">
+                    <svg viewBox="0 0 200 270" xmlns="http://www.w3.org/2000/svg" id="phrae-map">
+                        <!-- 1. Song (เหนือสุด) -->
+                        <polygon class="district-path" id="district-song" data-district="song" tabindex="0" role="button" aria-label="เลือกอำเภอสอง"
+                            points="60,10 75,12 85,15 90,30 95,40 100,60 90,75 80,85 70,80 50,75 40,80 35,60 40,40 50,30 55,20" />
+                        <text class="district-label" x="65" y="45" data-district="song">สอง</text>
+                        <text class="district-label-en" x="65" y="53" data-district="song">Song</text>
+
+                        <!-- 2. Rong Kwang (ตะวันออกเฉียงเหนือ) -->
+                        <polygon class="district-path" id="district-rong-kwang" data-district="rong-kwang" tabindex="0" role="button" aria-label="เลือกอำเภอร้องกวาง"
+                            points="95,40 110,45 125,50 140,65 145,80 135,100 125,115 110,120 105,100 95,95 85,85 90,75 100,60" />
+                        <text class="district-label" x="115" y="80" data-district="rong-kwang">ร้องกวาง</text>
+                        <text class="district-label-en" x="115" y="88" data-district="rong-kwang">Rong Kwang</text>
+
+                        <!-- 3. Nong Muang Khai (เหนือตอนกลาง - เล็กๆ) -->
+                        <polygon class="district-path" id="district-nong-muang-khai" data-district="nong-muang-khai" tabindex="0" role="button" aria-label="เลือกอำเภอหนองม่วงไข่"
+                            points="80,85 95,95 100,105 90,115 80,110 75,100" />
+                        <text class="district-label" x="88" y="103" data-district="nong-muang-khai">หนองม่วงไข่</text>
+                        <text class="district-label-en" x="88" y="111" data-district="nong-muang-khai">Nong Muang
+                            Khai</text>
+
+                        <!-- 4. Mueang Phrae (ศูนย์กลาง) -->
+                        <polygon class="district-path" id="district-mueang" data-district="mueang" tabindex="0" role="button" aria-label="เลือกอำเภอเมืองแพร่"
+                            points="70,80 80,85 75,100 80,110 90,115 105,100 110,120 120,135 115,155 100,165 90,150 80,155 60,140 65,125 55,115 65,100" />
+                        <text class="district-label" x="85" y="130" data-district="mueang">เมืองแพร่</text>
+                        <text class="district-label-en" x="85" y="138" data-district="mueang">Mueang Phrae</text>
+
+                        <!-- 5. Long (ตะวันตก) -->
+                        <polygon class="district-path" id="district-long" data-district="long" tabindex="0" role="button" aria-label="เลือกอำเภอลอง"
+                            points="35,60 40,80 50,75 70,80 65,100 55,115 65,125 60,140 80,155 75,170 60,185 45,190 30,175 25,150 20,130 15,110 25,90" />
+                        <text class="district-label" x="45" y="125" data-district="long">ลอง</text>
+                        <text class="district-label-en" x="45" y="133" data-district="long">Long</text>
+
+                        <!-- 6. Sung Men (ใต้เมืองแพร่) -->
+                        <polygon class="district-path" id="district-sung-men" data-district="sung-men" tabindex="0" role="button" aria-label="เลือกอำเภอสูงเม่น"
+                            points="80,155 90,150 100,165 110,180 105,195 90,190 85,175 75,170" />
+                        <text class="district-label" x="90" y="175" data-district="sung-men">สูงเม่น</text>
+                        <text class="district-label-en" x="90" y="183" data-district="sung-men">Sung Men</text>
+
+                        <!-- 7. Den Chai (ใต้) -->
+                        <polygon class="district-path" id="district-den-chai" data-district="den-chai" tabindex="0" role="button" aria-label="เลือกอำเภอเด่นชัย"
+                            points="75,170 85,175 90,190 105,195 100,210 110,225 100,235 90,230 85,215 70,210 65,195 60,185" />
+                        <text class="district-label" x="85" y="205" data-district="den-chai">เด่นชัย</text>
+                        <text class="district-label-en" x="85" y="213" data-district="den-chai">Den Chai</text>
+
+                        <!-- 8. Wang Chin (ตะวันตกเฉียงใต้) -->
+                        <polygon class="district-path" id="district-wang-chin" data-district="wang-chin" tabindex="0" role="button" aria-label="เลือกอำเภอวังชิ้น"
+                            points="45,190 60,185 65,195 70,210 85,215 90,230 85,245 75,260 55,255 45,240 40,220 30,210" />
+                        <text class="district-label" x="55" y="225" data-district="wang-chin">วังชิ้น</text>
+                        <text class="district-label-en" x="55" y="233" data-district="wang-chin">Wang Chin</text>
+
+                        <!-- Province border glow -->
+                        <defs>
+                            <filter id="glow">
+                                <feGaussianBlur stdDeviation="3" result="blur" />
+                                <feMerge>
+                                    <feMergeNode in="blur" />
+                                    <feMergeNode in="SourceGraphic" />
+                                </feMerge>
+                            </filter>
+                        </defs>
+                    </svg>
+                </div>
+
+                <p class="map-helper-text" id="map-helper-text" data-i18n="map-helper-text">เลือกอำเภอจากแผนที่ หรือใช้ปุ่มชื่ออำเภอด้านล่าง</p>
+
+                <!-- Compass -->
+                <div class="map-compass" aria-hidden="true">
+                    <svg viewBox="0 0 50 50" fill="none">
+                        <line x1="25" y1="5" x2="25" y2="45" stroke="rgba(255,255,255,0.3)" stroke-width="0.5" />
+                        <line x1="5" y1="25" x2="45" y2="25" stroke="rgba(255,255,255,0.3)" stroke-width="0.5" />
+                        <text x="25" y="4" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="4"
+                            font-family="var(--font-ui)">N</text>
+                        <text x="25" y="49" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="3.5"
+                            font-family="var(--font-ui)">S</text>
+                        <text x="47" y="26" text-anchor="start" fill="rgba(255,255,255,0.3)" font-size="3.5"
+                            font-family="var(--font-ui)">E</text>
+                        <text x="3" y="26" text-anchor="end" fill="rgba(255,255,255,0.3)" font-size="3.5"
+                            font-family="var(--font-ui)">W</text>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Info Panel -->
+            <div class="map-info-panel reveal reveal-delay-1">
+                <p class="map-info-title" id="map-info-title" data-i18n="province-label">จังหวัดแพร่</p>
+                <h3 class="map-info-amphoe" id="map-info-amphoe" data-i18n="province-name">จังหวัดแพร่</h3>
+                <p class="map-info-amphoe-en" id="map-info-amphoe-en" data-i18n="province-subtitle">เลือกอำเภอเพื่อสำรวจ</p>
+                <p class="map-info-desc" id="map-info-desc" data-i18n="province-desc">จังหวัดแพร่ตั้งอยู่ทางภาคเหนือตอนบนของประเทศไทย มีพื้นที่ 6,538.59 ตร.กม. เป็นเมืองเก่าแก่ที่มีประวัติศาสตร์ยาวนานกว่า 600 ปี ล้อมรอบด้วยเทือกเขาและป่าสัก มีแม่น้ำยมไหลผ่านเป็นสายหลัก</p>
+
+                <div class="map-info-stats" id="map-info-stats">
+                    <div class="map-stat-card">
+                        <div class="map-stat-value">8</div>
+                        <div class="map-stat-label" data-i18n="province-stat-districts">อำเภอ</div>
+                    </div>
+                    <div class="map-stat-card">
+                        <div class="map-stat-value">6,538</div>
+                        <div class="map-stat-label" data-i18n="province-stat-area">ตร.กม.</div>
+                    </div>
+                    <div class="map-stat-card">
+                        <div class="map-stat-value">~430K</div>
+                        <div class="map-stat-label" data-i18n="province-stat-population">ประชากร</div>
+                    </div>
+                    <div class="map-stat-card">
+                        <div class="map-stat-value">1,664</div>
+                        <div class="map-stat-label" data-i18n="province-stat-peak">ม. จุดสูงสุด</div>
+                    </div>
+                </div>
+
+                <button class="map-explore-btn" id="map-explore-btn" type="button" disabled aria-disabled="true">
+                    <span data-i18n="district-explore">ดูสถานที่แนะนำ</span>
+                    <i class="ph ph-arrow-right"></i>
+                </button>
+
+                <!-- District Quick Nav Pills -->
+                <div class="district-nav-pills" id="district-nav-pills">
+                    <button class="district-pill" type="button" data-district="song">สอง</button>
+                    <button class="district-pill" type="button" data-district="rong-kwang">ร้องกวาง</button>
+                    <button class="district-pill" type="button" data-district="nong-muang-khai">หนองม่วงไข่</button>
+                    <button class="district-pill" type="button" data-district="mueang">เมืองแพร่</button>
+                    <button class="district-pill" type="button" data-district="long">ลอง</button>
+                    <button class="district-pill" type="button" data-district="sung-men">สูงเม่น</button>
+                    <button class="district-pill" type="button" data-district="den-chai">เด่นชัย</button>
+                    <button class="district-pill" type="button" data-district="wang-chin">วังชิ้น</button>
+                </div>
+
+                <!-- ===== RECOMMENDED PLACES ===== -->
+                <div id="recommended-places">
+                    <div class="rp-header">
+                        <i class="ph-fill ph-map-pin"></i>
+                        <span class="rp-title" data-i18n="recommended-title">สถานที่แนะนำ</span>
+                    </div>
+
+                    <!-- ชื่อ + ปุ่มเลื่อน card -->
+                    <div class="rp-place-nav">
+                        <span class="rp-place-name" id="rp-place-name"></span>
+                        <div class="rp-card-nav">
+                            <button class="rp-card-btn" id="rp-card-prev" type="button" aria-label="สถานที่ก่อนหน้า">
+                                <i class="ph ph-caret-left"></i>
+                            </button>
+                            <span class="rp-card-counter" id="rp-card-counter">1 / 1</span>
+                            <button class="rp-card-btn" id="rp-card-next" type="button" aria-label="สถานที่ถัดไป">
+                                <i class="ph ph-caret-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Carousel -->
+                    <div class="rp-carousel" id="rp-carousel">
+                        <div class="rp-cards-track" id="rp-cards-track"></div>
+                    </div>
+
+                    <!-- Info ด้านล่าง -->
+                    <div class="rp-info">
+                        <p class="rp-desc" id="rp-desc"></p>
+                        <div class="rp-actions">
+                            <a class="rp-btn rp-btn-map" id="rp-btn-map" href="#" target="_blank" rel="noopener noreferrer">
+                                <i class="ph ph-navigation-arrow"></i> <span data-i18n="open-map">เปิดแผนที่</span>
+                            </a>
+                            <a class="rp-btn rp-btn-review" id="rp-btn-review" href="#" target="_blank" rel="noopener noreferrer">
+                                <i class="ph ph-star"></i> <span data-i18n="reviews">รีวิว</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== STATS BAR ===== -->
+    <section class="stats-section">
+        <div class="stats-bar">
+            <div class="stat-item reveal">
+                <div class="stat-number">3 <span>+</span></div>
+                <div class="stat-label" data-i18n="stat-parks">อุทยานแห่งชาติ</div>
+            </div>
+            <div class="stat-item reveal reveal-delay-1">
+                <div class="stat-number">50 <span>+</span></div>
+                <div class="stat-label" data-i18n="stat-temples">วัดโบราณ</div>
+            </div>
+            <div class="stat-item reveal reveal-delay-2">
+                <div class="stat-number">600 <span data-i18n="stat-year-unit">ปี</span></div>
+                <div class="stat-label" data-i18n="stat-history">ปีแห่งประวัติศาสตร์</div>
+            </div>
+            <div class="stat-item reveal reveal-delay-3">
+                <div class="stat-number">1,664 <span data-i18n="stat-meter-unit">ม.</span></div>
+                <div class="stat-label" data-i18n="stat-peak">ยอดเขาสูงสุด</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <i class="ph-fill ph-sun-horizon"></i>
+                </div>
+                <span class="footer-brand-text">PHRAE</span>
+            </div>
+
+            <nav class="footer-links">
+                <a href="#hero" class="footer-link" data-i18n="footer-about">เกี่ยวกับแพร่</a>
+                <a href="#highlights" class="footer-link" data-i18n="footer-attractions">สถานที่ท่องเที่ยว</a>
+                <a href="#district-map" class="footer-link" data-i18n="footer-getting-here">สำรวจอำเภอ</a>
+            </nav>
+        </div>
+        <p class="footer-credit">เว็บไซต์นี้เป็นส่วนหนึ่งของวิชา IS โรงเรียนนารีรัตน์ จังหวัดแพร่</p>
+    </footer>
+
+    <!-- ===== SCRIPTS ===== -->
+    <script>
+        // Scroll-reveal animation with IntersectionObserver
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.15,
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        // Smooth scroll for CTA button
+        document.getElementById('btn-explore')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('highlights')?.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Accessible navigation drawer
+        const siteNav = document.getElementById('site-nav');
+        const menuButton = document.getElementById('menu-btn');
+        const menuCloseButton = document.getElementById('menu-close');
+
+        function setNavigationOpen(isOpen) {
+            siteNav.classList.toggle('is-open', isOpen);
+            siteNav.setAttribute('aria-hidden', String(!isOpen));
+            menuButton.setAttribute('aria-expanded', String(isOpen));
+            document.body.classList.toggle('nav-open', isOpen);
+            if (isOpen) menuCloseButton.focus();
+        }
+
+        menuButton?.addEventListener('click', () => setNavigationOpen(true));
+        menuCloseButton?.addEventListener('click', () => {
+            setNavigationOpen(false);
+            menuButton.focus();
+        });
+        siteNav?.addEventListener('click', (event) => {
+            if (event.target === siteNav) setNavigationOpen(false);
+        });
+        document.querySelectorAll('[data-menu-link]').forEach((link) => {
+            link.addEventListener('click', () => setNavigationOpen(false));
+        });
+
+        // Background and text switching logic
+        const thumbItems = document.querySelectorAll('.thumb-item');
+        const heroBgImg = document.getElementById('hero-bg-img');
+        const heroLabel = document.getElementById('hero-label');
+        const heroSubtitle = document.getElementById('hero-subtitle');
+
+        thumbItems.forEach(item => {
+            item.addEventListener('click', () => {
+                activeHeroItem = item;
+                const newBg = item.getAttribute('data-bg');
+                const newTitle = item.getAttribute(`data-title-${activeLocale}`) || item.getAttribute('data-title');
+                const newLabel = item.getAttribute(`data-label-${activeLocale}`) || item.getAttribute('data-label');
+
+                // 1. Add fade-out classes
+                heroBgImg.classList.add('bg-fade-out');
+                heroLabel.classList.add('text-fade-out');
+                heroSubtitle.classList.add('text-fade-out');
+
+                // 2. Wait for fade-out transition, then swap content and fade back in
+                setTimeout(() => {
+                    heroBgImg.src = newBg;
+                    heroLabel.textContent = newLabel;
+                    heroSubtitle.textContent = newTitle;
+
+                    // Remove fade-out classes to trigger fade-in
+                    heroBgImg.classList.remove('bg-fade-out');
+                    heroLabel.classList.remove('text-fade-out');
+                    heroSubtitle.classList.remove('text-fade-out');
+                }, 400); // 400ms matches the transition duration in CSS
+            });
+        });
+
+        // ===== DISTRICT MAP INTERACTION =====
+        const districtData = {
+            'song': {
+                th: 'อำเภอสอง',
+                en: 'Song District',
+                desc: 'อำเภอสองตั้งอยู่ทางเหนือสุดของจังหวัดแพร่ เป็นพื้นที่ภูเขาสูงและป่าสมบูรณ์ มีอุทยานแห่งชาติเวียงโกศัย เป็นแหล่งท่องเที่ยวทางธรรมชาติที่สำคัญ มีน้ำตกและจุดชมวิวทิวทัศน์ที่สวยงาม',
+                stats: [
+                    { value: '907', label: 'ตร.กม.' },
+                    { value: '5', label: 'ตำบล' },
+                    { value: '~45K', label: 'ประชากร' },
+                    { value: 'เหนือ', label: 'ทิศ' }
+                ]
+            },
+            'rong-kwang': {
+                th: 'อำเภอร้องกวาง',
+                en: 'Rong Kwang District',
+                desc: 'อำเภอร้องกวางอยู่ทางตะวันออกเฉียงเหนือของจังหวัด มีพื้นที่เกษตรกรรมอุดมสมบูรณ์ตลอดลุ่มแม่น้ำยม เป็นแหล่งปลูกข้าวและพืชเศรษฐกิจที่สำคัญ มีวัดเก่าแก่และวัฒนธรรมล้านนาที่เข้มแข็ง',
+                stats: [
+                    { value: '694', label: 'ตร.กม.' },
+                    { value: '7', label: 'ตำบล' },
+                    { value: '~49K', label: 'ประชากร' },
+                    { value: 'ตะวันออกเฉียงเหนือ', label: 'ทิศ' }
+                ]
+            },
+            'nong-muang-khai': {
+                th: 'อำเภอหนองม่วงไข่',
+                en: 'Nong Muang Khai District',
+                desc: 'อำเภอหนองม่วงไข่เป็นอำเภอขนาดเล็กที่สุดของจังหวัดแพร่ ตั้งอยู่ทางตอนเหนือ-กลาง มีพื้นที่ราบเหมาะแก่การเกษตร ชุมชนอยู่อย่างเรียบง่าย ผู้คนมีวิถีชีวิตแบบพอเพียง',
+                stats: [
+                    { value: '155', label: 'ตร.กม.' },
+                    { value: '4', label: 'ตำบล' },
+                    { value: '~18K', label: 'ประชากร' },
+                    { value: 'เหนือ-กลาง', label: 'ทิศ' }
+                ]
+            },
+            'mueang': {
+                th: 'อำเภอเมืองแพร่',
+                en: 'Mueang Phrae District',
+                desc: 'ศูนย์กลางการปกครองและเศรษฐกิจของจังหวัด มีเมืองเก่าที่ล้อมรอบด้วยกำแพงเมืองโบราณ เป็นที่ตั้งของวัดพระธาตุช่อแฮ วัดจอมสวรรค์ และบ้านไม้สักวงศ์บูรณะ สถาปัตยกรรมล้านนาที่งดงาม',
+                stats: [
+                    { value: '539', label: 'ตร.กม.' },
+                    { value: '20', label: 'ตำบล' },
+                    { value: '~130K', label: 'ประชากร' },
+                    { value: 'กลาง', label: 'ทิศ' }
+                ]
+            },
+            'long': {
+                th: 'อำเภอลอง',
+                en: 'Long District',
+                desc: 'อำเภอลองตั้งอยู่ทางตะวันตกของจังหวัด เป็นเมืองเก่าแก่ที่มีประวัติศาสตร์ยาวนาน มีพิพิธภัณฑ์เมืองลองที่บอกเล่าเรื่องราวชุมชนโบราณ ล้อมรอบด้วยภูเขาและทิวทัศน์อันสวยงาม',
+                stats: [
+                    { value: '1,036', label: 'ตร.กม.' },
+                    { value: '9', label: 'ตำบล' },
+                    { value: '~52K', label: 'ประชากร' },
+                    { value: 'ตะวันตก', label: 'ทิศ' }
+                ]
+            },
+            'sung-men': {
+                th: 'อำเภอสูงเม่น',
+                en: 'Sung Men District',
+                desc: 'อำเภอสูงเม่นอยู่ทางใต้ของอำเภอเมือง เป็นแหล่งผลิตผ้าหม้อห้อมที่มีชื่อเสียงระดับประเทศ มีศูนย์อนุรักษ์ภูมิปัญญาท้องถิ่นและหมู่บ้านทำผ้าหม้อห้อมที่น่าเยี่ยมชม',
+                stats: [
+                    { value: '470', label: 'ตร.กม.' },
+                    { value: '12', label: 'ตำบล' },
+                    { value: '~68K', label: 'ประชากร' },
+                    { value: 'ใต้-กลาง', label: 'ทิศ' }
+                ]
+            },
+            'den-chai': {
+                th: 'อำเภอเด่นชัย',
+                en: 'Den Chai District',
+                desc: 'อำเภอเด่นชัยเป็นประตูทางเข้าจังหวัดแพร่ทางทิศใต้ มีสถานีรถไฟเด่นชัยที่เป็นจุดเชื่อมต่อการเดินทางสำคัญ เป็นแหล่งปลูกลำไย มะม่วง และพืชผลทางการเกษตร',
+                stats: [
+                    { value: '537', label: 'ตร.กม.' },
+                    { value: '5', label: 'ตำบล' },
+                    { value: '~34K', label: 'ประชากร' },
+                    { value: 'ใต้', label: 'ทิศ' }
+                ]
+            },
+            'wang-chin': {
+                th: 'อำเภอวังชิ้น',
+                en: 'Wang Chin District',
+                desc: 'อำเภอวังชิ้นตั้งอยู่ทางตะวันตกเฉียงใต้ของจังหวัด เป็นพื้นที่ภูเขาสูงและป่าไม้หนาแน่น มีอุทยานแห่งชาติเวียงโกศัยบางส่วนครอบคลุมพื้นที่ เหมาะสำหรับผู้รักการเดินป่าและธรรมชาติ',
+                stats: [
+                    { value: '2,200', label: 'ตร.กม.' },
+                    { value: '7', label: 'ตำบล' },
+                    { value: '~35K', label: 'ประชากร' },
+                    { value: 'ตะวันตกเฉียงใต้', label: 'ทิศ' }
+                ]
+            }
+        };
+
+        function selectDistrict(districtId) {
+            const data = districtData[districtId];
+            if (!data) return;
+            selectedDistrictId = districtId;
+            const localized = getDistrictPresentation(districtId, data);
+
+            // Update active state on map paths
+            document.querySelectorAll('.district-path').forEach(p => {
+                p.classList.toggle('active', p.dataset.district === districtId);
+                p.setAttribute('aria-pressed', String(p.dataset.district === districtId));
+            });
+
+            // Update active state on labels
+            document.querySelectorAll('.district-label, .district-label-en').forEach(l => {
+                l.classList.toggle('active', l.dataset.district === districtId);
+            });
+
+            // Update active state on pills
+            document.querySelectorAll('.district-pill').forEach(p => {
+                p.classList.toggle('active', p.dataset.district === districtId);
+                p.setAttribute('aria-pressed', String(p.dataset.district === districtId));
+            });
+
+            const exploreButton = document.getElementById('map-explore-btn');
+            exploreButton.disabled = false;
+            exploreButton.setAttribute('aria-disabled', 'false');
+
+            // Update info panel with fade
+            const amphoeEl = document.getElementById('map-info-amphoe');
+            const amphoeEnEl = document.getElementById('map-info-amphoe-en');
+            const descEl = document.getElementById('map-info-desc');
+            const titleEl = document.getElementById('map-info-title');
+            const statsEl = document.getElementById('map-info-stats');
+
+            // Fade out
+            amphoeEl.style.opacity = '0';
+            amphoeEl.style.transform = 'translateY(8px)';
+            descEl.style.opacity = '0';
+
+            setTimeout(() => {
+                titleEl.textContent = localized.label;
+                amphoeEl.textContent = localized.name;
+                amphoeEnEl.textContent = localized.subtitle;
+                descEl.textContent = localized.desc;
+
+                // Update stats
+                statsEl.innerHTML = localized.stats.map(s =>
+                    `<div class="map-stat-card">
+                        <div class="map-stat-value">${s.value}</div>
+                        <div class="map-stat-label">${s.label}</div>
+                    </div>`
+                ).join('');
+
+                // Fade in
+                amphoeEl.style.opacity = '1';
+                amphoeEl.style.transform = 'translateY(0)';
+                descEl.style.opacity = '1';
+            }, 300);
+        }
+
+        // Click on SVG district paths
+        document.querySelectorAll('.district-path').forEach(path => {
+            path.addEventListener('click', () => {
+                selectDistrict(path.dataset.district);
+            });
+            path.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    selectDistrict(path.dataset.district);
+                }
+            });
+        });
+
+        // Click on pills
+        document.querySelectorAll('.district-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                selectDistrict(pill.dataset.district);
+            });
+        });
+
+        document.getElementById('map-explore-btn')?.addEventListener('click', () => {
+            if (!selectedDistrictId) return;
+            document.getElementById('recommended-places')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+
+        // ===== RECOMMENDED PLACES — data =====
+        window.recommendedPlacesData = {
+            'nong-muang-khai': [
+                {
+                    id: 'khamsan-gallery',
+                    name: 'คำแสนแกลอรี่',
+                    tag: 'แกลอรี่ศิลปะ',
+                    tagIcon: 'ph-fill ph-paint-brush',
+                    desc: 'แหล่งเรียนรู้ทางศิลปะและวัฒนธรรมท้องถิ่น รวบรวมงานจิตรกรรมและประติมากรรมสะท้อนเสน่ห์เมืองแพร่ บรรยากาศเงียบสงบ เหมาะสำหรับผู้ที่ชอบเสพงานศิลป์',
+                    mapUrl: 'https://maps.google.com/?q=%E0%B8%84%E0%B8%B3%E0%B9%81%E0%B8%AA%E0%B8%99%E0%B9%81%E0%B8%81%E0%B8%A5%E0%B8%AD%E0%B8%A3%E0%B8%B5%E0%B9%88+%E0%B8%AB%E0%B8%99%E0%B8%AD%E0%B8%87%E0%B8%A1%E0%B9%88%E0%B8%A7%E0%B8%87%E0%B9%84%E0%B8%82%E0%B9%88+%E0%B9%81%E0%B8%9E%E0%B8%A3%E0%B9%88&authuser=1',
+                    reviewUrl: 'https://www.google.com/maps/search/%E0%B8%84%E0%B8%B3%E0%B9%81%E0%B8%AA%E0%B8%99%E0%B9%81%E0%B8%81%E0%B8%A5%E0%B8%AD%E0%B8%A3%E0%B8%B5%E0%B9%88+%E0%B9%81%E0%B8%9E%E0%B8%A3%E0%B9%88?authuser=1',
+                    images: ['nong-muang-khai/khamsan-gallery/1.jpg','nong-muang-khai/khamsan-gallery/2.jpg','nong-muang-khai/khamsan-gallery/3.webp']
+                },
+                {
+                    id: 'kannan-art',
+                    name: 'หอศิลป์กำนันอรรถ - บ้านนอกแกลอรี่',
+                    tag: 'หอศิลป์',
+                    tagIcon: 'ph-fill ph-image',
+                    desc: 'แกลอรี่ศิลปะบรรยากาศอบอุ่นสไตล์บ้านนอก นำเสนอผลงานศิลปะพื้นบ้าน ภาพถ่าย และงานคราฟต์ สะท้อนเรื่องราวและความเป็นอยู่ของชาวแพร่อย่างมีเอกลักษณ์',
+                    mapUrl: 'https://maps.google.com/?q=%E0%B8%AB%E0%B8%AD%E0%B8%A8%E0%B8%B4%E0%B8%A5%E0%B8%9B%E0%B9%8C%E0%B8%81%E0%B8%B3%E0%B8%99%E0%B8%B1%E0%B8%99%E0%B8%AD%E0%B8%A3%E0%B8%A3%E0%B8%96+%E0%B8%9A%E0%B9%89%E0%B8%B2%E0%B8%99%E0%B8%99%E0%B8%AD%E0%B8%81%E0%B9%81%E0%B8%81%E0%B8%A5%E0%B8%AD%E0%B8%A3%E0%B8%B5%E0%B9%88+%E0%B9%81%E0%B8%9E%E0%B8%A3%E0%B9%88&authuser=1',
+                    reviewUrl: 'https://www.google.com/maps/search/%E0%B8%AB%E0%B8%AD%E0%B8%A8%E0%B8%B4%E0%B8%A5%E0%B8%9B%E0%B9%8C%E0%B8%81%E0%B8%B3%E0%B8%99%E0%B8%B1%E0%B8%99%E0%B8%AD%E0%B8%A3%E0%B8%A3%E0%B8%96+%E0%B8%9A%E0%B9%89%E0%B8%B2%E0%B8%99%E0%B8%99%E0%B8%AD%E0%B8%81%E0%B9%81%E0%B8%81%E0%B8%A5%E0%B8%AD%E0%B8%A3%E0%B8%B5%E0%B9%88+%E0%B9%81%E0%B8%9E%E0%B8%A3%E0%B9%88?authuser=1',
+                    images: ['nong-muang-khai/kannan-art/1.jpg','nong-muang-khai/kannan-art/2.jpg','nong-muang-khai/kannan-art/3.jpg','nong-muang-khai/kannan-art/4.jpg','nong-muang-khai/kannan-art/5.jpg']
+                },
+                {
+                    id: 'nhabaan-cafe',
+                    name: 'หน้าบ้านคาเฟ่',
+                    tag: 'คาเฟ่',
+                    tagIcon: 'ph-fill ph-coffee',
+                    desc: 'คาเฟ่ฟีลโฮมมี่สุดอบอุ่น ให้ความรู้สึกเหมือนแวะมาจิบกาแฟหน้าบ้านเพื่อน มีเครื่องดื่มรีเฟรชชิ่ง กาแฟหอมกรุ่น และเบเกอรี่โฮมเมด พร้อมมุมถ่ายรูปน่ารัก',
+                    mapUrl: 'https://maps.google.com/?q=NHABAAN+CAFE+%E0%B8%A7%E0%B8%B1%E0%B8%87%E0%B8%AB%E0%B8%A5%E0%B8%A7%E0%B8%87+%E0%B9%81%E0%B8%9E%E0%B8%A3%E0%B9%88&authuser=1',
+                    reviewUrl: 'https://www.google.com/maps/search/NHABAAN+CAFE+%E0%B9%81%E0%B8%9E%E0%B8%A3%E0%B9%88?authuser=1',
+                    images: ['nong-muang-khai/nhabaan-cafe/1.png','nong-muang-khai/nhabaan-cafe/2.png','nong-muang-khai/nhabaan-cafe/3.png','nong-muang-khai/nhabaan-cafe/4.png']
+                },
+                {
+                    id: 'baan-nong-coffee',
+                    name: 'บ้านหนองคอฟฟี่',
+                    tag: 'ร้านกาแฟ',
+                    tagIcon: 'ph-fill ph-coffee',
+                    desc: 'ร้านกาแฟบรรยากาศสบายๆ ในชุมชนหนองม่วงไข่ โดดเด่นด้วยกาแฟรสชาติเข้มข้นและการบริการที่เป็นมิตร เหมาะแก่การแวะพักจิบเครื่องดื่มเติมพลัง',
+                    mapUrl: 'https://maps.google.com/?q=757X%2B697+%E0%B8%AB%E0%B8%99%E0%B8%AD%E0%B8%87%E0%B8%A1%E0%B9%88%E0%B8%A7%E0%B8%87%E0%B9%84%E0%B8%82%E0%B9%88+%E0%B9%81%E0%B8%9E%E0%B8%A3%E0%B9%88&authuser=1',
+                    reviewUrl: 'https://www.google.com/maps/search/%E0%B8%9A%E0%B9%89%E0%B8%B2%E0%B8%99%E0%B8%AB%E0%B8%99%E0%B8%AD%E0%B8%87%E0%B8%84%E0%B8%AD%E0%B8%9F%E0%B8%9F%E0%B8%B5%E0%B9%88+%E0%B8%AB%E0%B8%99%E0%B8%AD%E0%B8%87%E0%B8%A1%E0%B9%88%E0%B8%A7%E0%B8%87%E0%B9%84%E0%B8%82%E0%B9%88+%E0%B9%81%E0%B8%9E%E0%B8%A3%E0%B9%88?authuser=1',
+                    images: ['nong-muang-khai/baan-nong-coffee/1.jpg','nong-muang-khai/baan-nong-coffee/2.jpg','nong-muang-khai/baan-nong-coffee/3.jpg','nong-muang-khai/baan-nong-coffee/4.jpg','nong-muang-khai/baan-nong-coffee/5.jpg']
+                },
+                {
+                    id: 'gn-coffee',
+                    name: 'GN Coffee จีเอ็น คอฟฟี่',
+                    tag: 'คาเฟ่',
+                    tagIcon: 'ph-fill ph-coffee',
+                    desc: 'คาเฟ่สไตล์ทันสมัยบรรยากาศดีในตำบลน้ำรัด มีเมนูกาแฟคุณภาพ ชานม และเครื่องดื่มหลากหลาย ร่มรื่น โปร่งสบาย เหมาะสำหรับสายนั่งชิลหรือแวะพักผ่อน',
+                    mapUrl: 'https://maps.google.com/?q=GN+Coffee+%E0%B8%99%E0%B9%89%E0%B8%B3%E0%B8%A3%E0%B8%B1%E0%B8%94+%E0%B8%AB%E0%B8%99%E0%B8%AD%E0%B8%87%E0%B8%A1%E0%B9%88%E0%B8%A7%E0%B8%87%E0%B9%84%E0%B8%82%E0%B9%88+%E0%B9%81%E0%B8%9E%E0%B8%A3%E0%B9%88&authuser=1',
+                    reviewUrl: 'https://www.google.com/maps/search/GN+Coffee+%E0%B8%99%E0%B9%89%E0%B8%B3%E0%B8%A3%E0%B8%B1%E0%B8%94+%E0%B9%81%E0%B8%9E%E0%B8%A3%E0%B9%88?authuser=1',
+                    images: ['nong-muang-khai/gn-coffee/1.jpg','nong-muang-khai/gn-coffee/2.jpg','nong-muang-khai/gn-coffee/3.jpg','nong-muang-khai/gn-coffee/4.jpg','nong-muang-khai/gn-coffee/5.jpg']
+                }
+            ],
+
+            // ===== อำเภอเมืองแพร่ =====
+            'mueang': [
+                {
+                    id: 'chohaae',
+                    name: 'วัดพระธาตุช่อแฮ',
+                    tag: 'วัด / พระธาตุ',
+                    tagIcon: 'ph-fill ph-star-four',
+                    desc: 'วัดศักดิ์สิทธิ์คู่บ้านคู่เมืองแพร่ เป็นที่ประดิษฐานพระธาตุช่อแฮ สีทองอร่าม อายุกว่า 1,600 ปี ชาวแพร่ถือว่าเป็นพระธาตุประจำปีเกิดของผู้เกิดปีขาล',
+                    mapUrl: 'https://maps.google.com/?q=%E0%B8%A7%E0%B8%B1%E0%B8%94%E0%B8%9E%E0%B8%A3%E0%B8%B0%E0%B8%98%E0%B8%B2%E0%B8%95%E0%B8%B8%E0%B8%8A%E0%B9%88%E0%B8%AD%E0%B9%81%E0%B8%AE+%E0%B9%81%E0%B8%9E%E0%B8%A3%E0%B9%88',
+                    reviewUrl: 'https://www.google.com/maps/search/%E0%B8%A7%E0%B8%B1%E0%B8%94%E0%B8%9E%E0%B8%A3%E0%B8%B0%E0%B8%98%E0%B8%B2%E0%B8%95%E0%B8%B8%E0%B8%8A%E0%B9%88%E0%B8%AD%E0%B9%81%E0%B8%AE+%E0%B9%81%E0%B8%9E%E0%B8%A3%E0%B9%88',
+                    images: [
+                        'mueang/cho-hae/1.jpg',
+                        'mueang/cho-hae/2.jpg'
+                    ]
+                },
+                {
+                    id: 'khumjao',
+                    name: 'คุ้มเจ้าหลวง',
+                    tag: 'สถานที่ประวัติศาสตร์',
+                    tagIcon: 'ph-fill ph-buildings',
+                    desc: 'อดีตที่ประทับของเจ้าผู้ครองนครแพร่ สถาปัตยกรรมผสมผสานล้านนาและยุโรป ปัจจุบันเป็นพิพิธภัณฑ์จัดแสดงโบราณวัตถุและข้าวของเครื่องใช้ของเจ้านายฝ่ายเหนือ',
+                    mapUrl: 'https://maps.google.com/?q=%E0%B8%84%E0%B8%B8%E0%B9%89%E0%B8%A1%E0%B9%80%E0%B8%88%E0%B9%89%E0%B8%B2%E0%B8%AB%E0%B8%A5%E0%B8%A7%E0%B8%87+%E0%B9%81%E0%B8%9E%E0%B8%A3%E0%B9%88',
+                    reviewUrl: 'https://www.google.com/maps/search/%E0%B8%84%E0%B8%B8%E0%B9%89%E0%B8%A1%E0%B9%80%E0%B8%88%E0%B9%89%E0%B8%B2%E0%B8%AB%E0%B8%A5%E0%B8%A7%E0%B8%87+%E0%B9%81%E0%B8%9E%E0%B8%A3%E0%B9%88',
+                    images: [
+                        'mueang/khum-jao/1.jpg',
+                        'mueang/khum-jao/2.jpg',
+                        'mueang/khum-jao/3.jpg'
+                    ]
+                },
+                {
+                    id: 'pae-mueang-phi',
+                    name: 'แพะเมืองผี',
+                    tag: 'แหล่งธรรมชาติ',
+                    tagIcon: 'ph-fill ph-mountains',
+                    desc: 'ปรากฏการณ์ทางธรณีวิทยาที่หาดูได้ยาก เสาดินยักษ์รูปร่างแปลกตาสูงหลายเมตร เกิดจากการกัดเซาะของน้ำและลมตามธรรมชาติ มีบรรยากาศลึกลับน่าตื่นตา',
+                    mapUrl: 'https://maps.google.com/?q=%E0%B9%81%E0%B8%9E%E0%B8%B0%E0%B9%80%E0%B8%A1%E0%B8%B7%E0%B8%AD%E0%B8%87%E0%B8%9C%E0%B8%B5+%E0%B9%81%E0%B8%9E%E0%B8%A3%E0%B9%88',
+                    reviewUrl: 'https://www.google.com/maps/search/%E0%B9%81%E0%B8%9E%E0%B8%B0%E0%B9%80%E0%B8%A1%E0%B8%B7%E0%B8%AD%E0%B8%87%E0%B8%9C%E0%B8%B5+%E0%B9%81%E0%B8%9E%E0%B8%A3%E0%B9%88',
+                    images: [
+                        'mueang/pae-mueang-phi/1.JPG',
+                        'mueang/pae-mueang-phi/2.JPG',
+                        'mueang/pae-mueang-phi/3.WEBP'
+                    ]
+                },
+                {
+                    id: 'baan-wongburi',
+                    name: 'บ้านวงศ์บุรี',
+                    tag: 'สถาปัตยกรรม',
+                    tagIcon: 'ph-fill ph-house-line',
+                    desc: 'บ้านไม้สักสองชั้นสไตล์ยุโรปผสมล้านนา อายุกว่า 100 ปี เจ้าของเดิมคือเจ้าสุนันตา ณ แพร่ ปัจจุบันเป็นโรงแรมบูทีคที่ได้รับรางวัลอนุรักษ์สถาปัตยกรรมดีเด่น',
+                    mapUrl: 'https://maps.google.com/?q=%E0%B8%9A%E0%B9%89%E0%B8%B2%E0%B8%99%E0%B8%A7%E0%B8%87%E0%B8%A8%E0%B9%8C%E0%B8%9A%E0%B8%B8%E0%B8%A3%E0%B8%B5+%E0%B9%81%E0%B8%9E%E0%B8%A3%E0%B9%88',
+                    reviewUrl: 'https://www.google.com/maps/search/%E0%B8%9A%E0%B9%89%E0%B8%B2%E0%B8%99%E0%B8%A7%E0%B8%87%E0%B8%A8%E0%B9%8C%E0%B8%9A%E0%B8%B8%E0%B8%A3%E0%B8%B5+%E0%B9%81%E0%B8%9E%E0%B8%A3%E0%B9%88',
+                    images: [
+                        'mueang/baan-wongburi/1.JPG',
+                        'mueang/baan-wongburi/2.JPG',
+                        'mueang/baan-wongburi/3.JPG'
+                    ]
+                },
+                {
+                    id: 'nakuha',
+                    name: 'วัดนาคูหา',
+                    tag: 'วัด',
+                    tagIcon: 'ph-fill ph-star-four',
+                    desc: 'วัดเก่าแก่ในเขตเมืองแพร่ มีพระธาตุเก่าแก่และพระพุทธรูปหินทรายโบราณ บรรยากาศร่มรื่นสงบ เหมาะแก่การมาสักการะและเรียนรู้ประวัติศาสตร์ท้องถิ่น',
+                    mapUrl: 'https://maps.google.com/?q=%E0%B8%A7%E0%B8%B1%E0%B8%94%E0%B8%99%E0%B8%B2%E0%B8%84%E0%B8%B9%E0%B8%AB%E0%B8%B2+%E0%B9%81%E0%B8%9E%E0%B8%A3%E0%B9%88',
+                    reviewUrl: 'https://www.google.com/maps/search/%E0%B8%A7%E0%B8%B1%E0%B8%94%E0%B8%99%E0%B8%B2%E0%B8%84%E0%B8%B9%E0%B8%AB%E0%B8%B2+%E0%B9%81%E0%B8%9E%E0%B8%A3%E0%B9%88',
+                    images: [
+                        'mueang/nakuha/1.JPG',
+                        'mueang/nakuha/2.JPG',
+                        'mueang/nakuha/3.JPG'
+                    ]
+                },
+                {
+                    id: 'hom-hom-center',
+                    name: 'ศูนย์เรียนรู้ผ้าหม้อห้อม ป้าเหงี่ยม',
+                    tag: 'วัฒนธรรม / หัตถกรรม',
+                    tagIcon: 'ph-fill ph-hand-heart',
+                    desc: 'ศูนย์เรียนรู้การย้อมผ้าหม้อห้อมแบบดั้งเดิม ผ้าพื้นเมืองที่เป็นเอกลักษณ์ของจังหวัดแพร่ เปิดให้ผู้สนใจเข้ามาเรียนรู้กระบวนการย้อมผ้าและเลือกซื้อผลิตภัณฑ์',
+                    mapUrl: 'https://www.google.com/maps/place/%E0%B8%A8%E0%B8%B9%E0%B8%99%E0%B8%A2%E0%B9%8C%E0%B9%80%E0%B8%A3%E0%B8%B5%E0%B8%A2%E0%B8%99%E0%B8%A3%E0%B8%B9%E0%B9%89%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%A2%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B8%9C%E0%B9%89%E0%B8%B2%E0%B8%AB%E0%B8%A1%E0%B9%89%E0%B8%AD%E0%B8%AB%E0%B9%89%E0%B8%AD%E0%B8%A1+%22%E0%B8%9B%E0%B9%89%E0%B8%B2%E0%B9%80%E0%B8%AB%E0%B8%87%E0%B8%B5%E0%B9%88%E0%B8%A2%E0%B8%A1%22/@18.1670579,100.167194,17z/data=!3m1!4b1!4m6!3m5!1s0x30d8e9f8717825dd:0xd863f960b3aeb187!8m2!3d18.1670579!4d100.1697689!16s%2Fg%2F11cn5nz0x6?entry=ttu&g_ep=EgoyMDI2MDgxMi4wIKXMDSoASAFQAw%3D%3D',
+                    reviewUrl: 'https://www.google.com/maps/search/%E0%B8%9C%E0%B9%89%E0%B8%B2%E0%B8%AB%E0%B8%A1%E0%B9%89%E0%B8%AD%E0%B8%AB%E0%B9%89%E0%B8%AD%E0%B8%A1+%E0%B9%81%E0%B8%9E%E0%B8%A3%E0%B9%88',
+                    images: [
+                        'mueang/hom-hom-center/1.JPG',
+                        'mueang/hom-hom-center/2.JPG',
+                        'mueang/hom-hom-center/3.JPG'
+                    ]
+                }
+            ],
+
+            // ===== อำเภอสูงเม่น =====
+            'sung-men': [
+                {
+                    id: 'wat-sung-men',
+                    name: 'วัดสูงเม่น',
+                    tag: 'วัด',
+                    tagIcon: 'ph-fill ph-star-four',
+                    desc: 'วัดเก่าแก่คู่เมืองสูงเม่น มีพระอุโบสถที่สวยงามและพระพุทธรูปสำคัญ เป็นศูนย์รวมจิตใจของชาวสูงเม่น บรรยากาศสงบร่มรื่น เหมาะสำหรับสักการะและพักผ่อนจิตใจ',
+                    mapUrl: 'https://maps.google.com/?q=%E0%B8%A7%E0%B8%B1%E0%B8%94%E0%B8%AA%E0%B8%B9%E0%B8%87%E0%B9%80%E0%B8%A1%E0%B9%88%E0%B8%99+%E0%B9%81%E0%B8%9E%E0%B8%A3%E0%B9%88',
+                    reviewUrl: 'https://www.google.com/maps/search/%E0%B8%A7%E0%B8%B1%E0%B8%94%E0%B8%AA%E0%B8%B9%E0%B8%87%E0%B9%80%E0%B8%A1%E0%B9%88%E0%B8%99+%E0%B9%81%E0%B8%9E%E0%B8%A3%E0%B9%88',
+                    images: [
+                        'sung-men/wat-sung-men/1.PNG',
+                        'sung-men/wat-sung-men/2.PNG'
+                    ]
+                },
+                {
+                    id: 'tatad-saowwa',
+                    name: 'น้ำตกตาดซาววา',
+                    tag: 'แหล่งธรรมชาติ',
+                    tagIcon: 'ph-fill ph-mountains',
+                    desc: 'น้ำตกสวยงามท่ามกลางป่าเขียวขจี ในเขตอำเภอสูงเม่น เหมาะสำหรับการท่องเที่ยวเชิงธรรมชาติ พักผ่อนหย่อนใจ และถ่ายภาพ โดยเฉพาะในช่วงหน้าฝน',
+                    mapUrl: 'https://maps.google.com/?q=%E0%B8%99%E0%B9%89%E0%B8%B3%E0%B8%95%E0%B8%81%E0%B8%95%E0%B8%B2%E0%B8%94%E0%B8%8B%E0%B8%B2%E0%B8%A7%E0%B8%A7%E0%B8%B2+%E0%B8%AA%E0%B8%B9%E0%B8%87%E0%B9%80%E0%B8%A1%E0%B9%88%E0%B8%99+%E0%B9%81%E0%B8%9E%E0%B8%A3%E0%B9%88',
+                    reviewUrl: 'https://www.google.com/maps/search/%E0%B8%99%E0%B9%89%E0%B8%B3%E0%B8%95%E0%B8%81%E0%B8%95%E0%B8%B2%E0%B8%94%E0%B8%8B%E0%B8%B2%E0%B8%A7%E0%B8%A7%E0%B8%B2+%E0%B9%81%E0%B8%9E%E0%B8%A3%E0%B9%88',
+                    images: [
+                        'sung-men/tatad-saowwa/1.PNG',
+                        'sung-men/tatad-saowwa/2.JPG',
+                        'sung-men/tatad-saowwa/3.JPG'
+                    ]
+                },
+                {
+                    id: 'angkaep-maeman',
+                    name: 'อ่างเก็บน้ำแม่มาน',
+                    tag: 'แหล่งธรรมชาติ',
+                    tagIcon: 'ph-fill ph-mountains',
+                    desc: 'อ่างเก็บน้ำขนาดใหญ่ท่ามกลางทิวทัศน์ภูเขา บรรยากาศเงียบสงบ เหมาะแก่การพักผ่อนชมธรรมชาติ ตกปลา และถ่ายภาพ โดยเฉพาะยามเช้าที่หมอกลงและน้ำในอ่างสะท้อนภูเขา',
+                    mapUrl: 'https://maps.google.com/?q=%E0%B8%AD%E0%B9%88%E0%B8%B2%E0%B8%87%E0%B9%80%E0%B8%81%E0%B9%87%E0%B8%9A%E0%B8%99%E0%B9%89%E0%B8%B3%E0%B9%81%E0%B8%A1%E0%B9%88%E0%B8%A1%E0%B8%B2%E0%B8%99+%E0%B8%AA%E0%B8%B9%E0%B8%87%E0%B9%80%E0%B8%A1%E0%B9%88%E0%B8%99+%E0%B9%81%E0%B8%9E%E0%B8%A3%E0%B9%88',
+                    reviewUrl: 'https://www.google.com/maps/search/%E0%B8%AD%E0%B9%88%E0%B8%B2%E0%B8%87%E0%B9%80%E0%B8%81%E0%B9%87%E0%B8%9A%E0%B8%99%E0%B9%89%E0%B8%B3%E0%B9%81%E0%B8%A1%E0%B9%88%E0%B8%A1%E0%B8%B2%E0%B8%99+%E0%B9%81%E0%B8%9E%E0%B8%A3%E0%B9%88',
+                    images: [
+                        'sung-men/angkaep-maeman/1.JPG',
+                        'sung-men/angkaep-maeman/2.JPG'
+                    ]
+                },
+                {
+                    id: 'ku-cafe',
+                    name: 'คึ คาเฟ่',
+                    tag: 'คาเฟ่',
+                    tagIcon: 'ph-fill ph-coffee',
+                    desc: 'คาเฟ่บรรยากาศดี ในอำเภอสูงเม่น ตกแต่งเรียบง่ายอบอุ่น มีเมนูเครื่องดื่มและของทานเล่น เหมาะแก่การแวะพักและนั่งชิลท่ามกลางบรรยากาศธรรมชาติ',
+                    mapUrl: 'https://maps.google.com/?q=%E0%B8%84%E0%B8%B6+%E0%B8%84%E0%B8%B2%E0%B9%80%E0%B8%9F%E0%B9%88+%E0%B8%AA%E0%B8%B9%E0%B8%87%E0%B9%80%E0%B8%A1%E0%B9%88%E0%B8%99+%E0%B9%81%E0%B8%9E%E0%B8%A3%E0%B9%88',
+                    reviewUrl: 'https://www.google.com/maps/search/%E0%B8%84%E0%B8%B6+%E0%B8%84%E0%B8%B2%E0%B9%80%E0%B8%9F%E0%B9%88+%E0%B8%AA%E0%B8%B9%E0%B8%87%E0%B9%80%E0%B8%A1%E0%B9%88%E0%B8%99+%E0%B9%81%E0%B8%9E%E0%B8%A3%E0%B9%88',
+                    images: [
+                        'sung-men/ku-cafe/1.jpg',
+                        'sung-men/ku-cafe/2.WEBP',
+                        'sung-men/ku-cafe/3.jpg'
+                    ]
+                },
+                {
+                    id: 'wiang-phen-cafe',
+                    name: 'เวียงเพ็ญ คาเฟ่',
+                    tag: 'คาเฟ่',
+                    tagIcon: 'ph-fill ph-coffee',
+                    desc: 'คาเฟ่สไตล์ย้อนยุค บรรยากาศอบอุ่นในเขตสูงเม่น มีเครื่องดื่มและขนมหวานหลากหลาย ตกแต่งด้วยของเก่าและงานศิลป์ท้องถิ่น เหมาะสำหรับแวะถ่ายรูปและจิบกาแฟ',
+                    mapUrl: 'https://maps.google.com/?q=%E0%B9%80%E0%B8%A7%E0%B8%B5%E0%B8%A2%E0%B8%87%E0%B9%80%E0%B8%9E%E0%B9%87%E0%B8%8D+%E0%B8%84%E0%B8%B2%E0%B9%80%E0%B8%9F%E0%B9%88+%E0%B8%AA%E0%B8%B9%E0%B8%87%E0%B9%80%E0%B8%A1%E0%B9%88%E0%B8%99+%E0%B9%81%E0%B8%9E%E0%B8%A3%E0%B9%88',
+                    reviewUrl: 'https://www.google.com/maps/search/%E0%B9%80%E0%B8%A7%E0%B8%B5%E0%B8%A2%E0%B8%87%E0%B9%80%E0%B8%9E%E0%B9%87%E0%B8%8D+%E0%B8%84%E0%B8%B2%E0%B9%80%E0%B8%9F%E0%B9%88+%E0%B9%81%E0%B8%9E%E0%B8%A3%E0%B9%88',
+                    images: [
+                        'sung-men/wiang-phen-cafe/1.PNG',
+                        'sung-men/wiang-phen-cafe/2.PNG',
+                        'sung-men/wiang-phen-cafe/3.PNG'
+                    ]
+                }
+            ],
+
+            // ===== อำเภอร้องกวาง =====
+            'rong-kwang': [
+                {
+                    id: 'tham-pha-nang-khoi',
+                    name: 'ถ้ำผานางคอย',
+                    tag: 'ถ้ำ / แหล่งธรรมชาติ',
+                    tagIcon: 'ph-fill ph-mountains',
+                    desc: 'แหล่งท่องเที่ยวธรรมชาติของอำเภอร้องกวาง เหมาะสำหรับผู้ที่สนใจชมความงามของถ้ำและบรรยากาศป่าเขาโดยรอบ',
+                    mapUrl: 'https://www.google.com/maps/search/?api=1&query=ถ้ำผานางคอย+ร้องกวาง+แพร่',
+                    reviewUrl: 'https://www.google.com/maps/search/ถ้ำผานางคอย+ร้องกวาง+แพร่',
+                    images: [
+                        'สถานที่/อําเภอ ร้องกวาง/ถ้ำผานางคอย/ถ้ำผานางคอย 1.jpg',
+                        'สถานที่/อําเภอ ร้องกวาง/ถ้ำผานางคอย/ถ้ำผานางคอย 2.jpg',
+                        'สถานที่/อําเภอ ร้องกวาง/ถ้ำผานางคอย/ถ้ำผานางคอย 3.jpg'
+                    ]
+                },
+                {
+                    id: 'phrae-saeng-thian-buddha-park',
+                    name: 'พุทธอุทยานแพร่แสงเทียน',
+                    tag: 'พุทธสถาน',
+                    tagIcon: 'ph-fill ph-star-four',
+                    desc: 'พุทธสถานในอำเภอร้องกวางสำหรับสักการะและพักผ่อนจิตใจ ท่ามกลางบรรยากาศสงบร่มรื่น',
+                    mapUrl: 'https://www.google.com/maps/search/?api=1&query=พุทธอุทยานแพร่แสงเทียน+ร้องกวาง+แพร่',
+                    reviewUrl: 'https://www.google.com/maps/search/พุทธอุทยานแพร่แสงเทียน+ร้องกวาง+แพร่',
+                    images: [
+                        'สถานที่/อําเภอ ร้องกวาง/พุทธอุทยานแพร่แสงเทียน/พุทธอุทยานเเพร่เเสงเทียน 1.jpg',
+                        'สถานที่/อําเภอ ร้องกวาง/พุทธอุทยานแพร่แสงเทียน/พุทธอุทยานเเพร่เเสงเทียน 2.jpg'
+                    ]
+                },
+                {
+                    id: 'mon-mae-thang',
+                    name: 'ม่อนแม่ถาง',
+                    tag: 'จุดชมวิว',
+                    tagIcon: 'ph-fill ph-mountains',
+                    desc: 'จุดท่องเที่ยวท่ามกลางธรรมชาติของอำเภอร้องกวาง เหมาะสำหรับชมทิวทัศน์ สูดอากาศบริสุทธิ์ และเก็บภาพบรรยากาศภูเขา',
+                    mapUrl: 'https://www.google.com/maps/search/?api=1&query=ม่อนแม่ถาง+ร้องกวาง+แพร่',
+                    reviewUrl: 'https://www.google.com/maps/search/ม่อนแม่ถาง+ร้องกวาง+แพร่',
+                    images: [
+                        'สถานที่/อําเภอ ร้องกวาง/ม่อนแม่ถาง/ม่อนแม่ถาง 1.jpg',
+                        'สถานที่/อําเภอ ร้องกวาง/ม่อนแม่ถาง/ม่อนแม่ถาง 2.jpg',
+                        'สถานที่/อําเภอ ร้องกวาง/ม่อนแม่ถาง/ม่อนแม่ถาง 3.jpg'
+                    ]
+                },
+                {
+                    id: 'wat-phra-that-pu-jae',
+                    name: 'วัดพระธาตุปูแจ',
+                    tag: 'วัด / พระธาตุ',
+                    tagIcon: 'ph-fill ph-star-four',
+                    desc: 'วัดและสถานที่สักการะสำคัญในอำเภอร้องกวาง เหมาะแก่การแวะไหว้พระและสัมผัสบรรยากาศวัฒนธรรมท้องถิ่น',
+                    mapUrl: 'https://www.google.com/maps/search/?api=1&query=วัดพระธาตุปูแจ+ร้องกวาง+แพร่',
+                    reviewUrl: 'https://www.google.com/maps/search/วัดพระธาตุปูแจ+ร้องกวาง+แพร่',
+                    images: ['rong-kwang/wat-phra-that-pu-jae/1.jpg','rong-kwang/wat-phra-that-pu-jae/2.jpg','rong-kwang/wat-phra-that-pu-jae/3.jpg']
+                },
+                {
+                    id: 'huai-rong-waterfall-arboretum',
+                    name: 'สวนรุกขชาติน้ำตกห้วยโรง',
+                    tag: 'น้ำตก / แหล่งธรรมชาติ',
+                    tagIcon: 'ph-fill ph-mountains',
+                    desc: 'พื้นที่สีเขียวสำหรับพักผ่อนและท่องเที่ยวเชิงธรรมชาติของอำเภอร้องกวาง มีน้ำตกและพรรณไม้ให้ชมตามฤดูกาล',
+                    mapUrl: 'https://www.google.com/maps/search/?api=1&query=สวนรุกขชาติน้ำตกห้วยโรง+ร้องกวาง+แพร่',
+                    reviewUrl: 'https://www.google.com/maps/search/สวนรุกขชาติน้ำตกห้วยโรง+ร้องกวาง+แพร่',
+                    images: ['rong-kwang/huai-rong-waterfall/1.jpg','rong-kwang/huai-rong-waterfall/2.jpg','rong-kwang/huai-rong-waterfall/3.jpg']
+                }
+            ],
+
+            // ===== อำเภอลอง =====
+            'long': [
+                {
+                    id: 'komol-ancient-textile-museum',
+                    name: 'พิพิธภัณฑ์โกมลผ้าโบราณ',
+                    tag: 'พิพิธภัณฑ์ / ผ้าโบราณ',
+                    tagIcon: 'ph-fill ph-image',
+                    desc: 'แหล่งเรียนรู้เรื่องผ้าโบราณและภูมิปัญญาท้องถิ่นของอำเภอลอง เหมาะสำหรับผู้สนใจงานหัตถกรรมและวัฒนธรรมล้านนา',
+                    mapUrl: 'https://www.google.com/maps/search/?api=1&query=พิพิธภัณฑ์โกมลผ้าโบราณ+ลอง+แพร่',
+                    reviewUrl: 'https://www.google.com/maps/search/พิพิธภัณฑ์โกมลผ้าโบราณ+ลอง+แพร่',
+                    images: ['long/komol-museum/1.JPG','long/komol-museum/2.JPG','long/komol-museum/3.JPG','long/komol-museum/4.JPG']
+                },
+                {
+                    id: 'wat-si-don-kham',
+                    name: 'วัดศรีดอนคำ',
+                    tag: 'วัด',
+                    tagIcon: 'ph-fill ph-star-four',
+                    desc: 'วัดในอำเภอลองที่สะท้อนวิถีศรัทธาและวัฒนธรรมของชุมชน เหมาะสำหรับแวะสักการะและเรียนรู้บรรยากาศท้องถิ่น',
+                    mapUrl: 'https://www.google.com/maps/search/?api=1&query=วัดศรีดอนคำ+ลอง+แพร่',
+                    reviewUrl: 'https://www.google.com/maps/search/วัดศรีดอนคำ+ลอง+แพร่',
+                    images: ['long/wat-si-don-kham/1.JPG','long/wat-si-don-kham/2.JPG','long/wat-si-don-kham/3.JPG']
+                },
+                {
+                    id: 'wat-salaeng',
+                    name: 'วัดสะแล่ง',
+                    tag: 'วัด',
+                    tagIcon: 'ph-fill ph-star-four',
+                    desc: 'สถานที่สักการะของชุมชนอำเภอลอง บรรยากาศสงบ เหมาะแก่การแวะไหว้พระและพักผ่อนใจระหว่างเดินทาง',
+                    mapUrl: 'https://www.google.com/maps/search/?api=1&query=วัดสะแล่ง+ลอง+แพร่',
+                    reviewUrl: 'https://www.google.com/maps/search/วัดสะแล่ง+ลอง+แพร่',
+                    images: ['long/wat-salaeng/1.JPG','long/wat-salaeng/2.JPG','long/wat-salaeng/3.JPG']
+                },
+                {
+                    id: 'ban-pin-railway-station',
+                    name: 'สถานีรถไฟบ้านปิน',
+                    tag: 'สถานีรถไฟ',
+                    tagIcon: 'ph-fill ph-train',
+                    desc: 'สถานีรถไฟบ้านปินในอำเภอลอง เป็นจุดแวะชมบรรยากาศการเดินทางและวิถีชุมชนริมทางรถไฟ',
+                    mapUrl: 'https://www.google.com/maps/search/?api=1&query=สถานีรถไฟบ้านปิน+ลอง+แพร่',
+                    reviewUrl: 'https://www.google.com/maps/search/สถานีรถไฟบ้านปิน+ลอง+แพร่',
+                    images: ['long/ban-pin-station/1.JPG','long/ban-pin-station/2.JPG','long/ban-pin-station/3.JPG']
+                },
+                {
+                    id: 'satsatra-saen-mueang-hom',
+                    name: 'หอศาสตราแสนเมืองฮอม',
+                    tag: 'แหล่งเรียนรู้',
+                    tagIcon: 'ph-fill ph-book-open',
+                    desc: 'แหล่งเรียนรู้เรื่องราวชุมชนและวัฒนธรรมท้องถิ่นของอำเภอลอง เหมาะสำหรับผู้ที่สนใจประวัติศาสตร์และอัตลักษณ์เมืองแพร่',
+                    mapUrl: 'https://www.google.com/maps/search/?api=1&query=หอศาสตราแสนเมืองฮอม+ลอง+แพร่',
+                    reviewUrl: 'https://www.google.com/maps/search/หอศาสตราแสนเมืองฮอม+ลอง+แพร่',
+                    images: ['mueang/satsatra-saen-mueang-hom/1.JPG','mueang/satsatra-saen-mueang-hom/2.JPG','mueang/satsatra-saen-mueang-hom/3.JPG','mueang/satsatra-saen-mueang-hom/4.JPG']
+                }
+            ],
+
+            // ===== อำเภอเด่นชัย =====
+            'den-chai': [
+                {
+                    id: 'phraya-chai-bun-camp',
+                    name: 'ค่ายพระยาไชยบูรณ์',
+                    tag: 'สถานที่สำคัญ',
+                    tagIcon: 'ph-fill ph-flag',
+                    desc: 'ที่ตั้งกองพันทหารม้าที่ 12 กองพลทหารม้าที่ 1 กองทัพภาคที่ 3 ตั้งชื่อตามพระยาไชยบูรณ์ (ทองอยู่ สุวรรณบาตร) อดีตข้าหลวงประจำจังหวัดแพร่ผู้เสียสละเพื่อปกป้องบ้านเมือง',
+                    mapUrl: 'https://www.google.com/maps/search/?api=1&query=ค่ายพระยาไชยบูรณ์+เด่นชัย+แพร่',
+                    reviewUrl: 'https://goo.gl/maps/X6ebTK1h6pdb9TGj7?g_st=ac',
+                    images: ['den-chai/phraya-chai-bun-camp/1.jpg']
+                },
+                {
+                    id: 'wat-phra-that-suthon-mongkhon-khiri',
+                    name: 'วัดพระธาตุสุโทนมงคลคีรี',
+                    tag: 'วัด / พระธาตุ',
+                    tagIcon: 'ph-fill ph-star-four',
+                    desc: 'วัดสร้างขึ้นใหม่เมื่อ พ.ศ. 2520 โดดเด่นด้วยศิลปกรรมล้านนาประยุกต์ จิตรกรรมชาดกและพุทธประวัติ เจดีย์ทรงล้านนากว่า 30 องค์ และพิพิธภัณฑ์ไม้สักทรงล้านนา',
+                    mapUrl: 'https://maps.app.goo.gl/wSgDRSmb9jmU3WTW6',
+                    reviewUrl: 'https://share.google/3VdoAI6KQ0pAsX1r7',
+                    images: ['den-chai/wat-suthon/1.jpg','den-chai/wat-suthon/2.jpg','den-chai/wat-suthon/3.jpg','den-chai/wat-suthon/4.png']
+                },
+                {
+                    id: 'wat-phrae-thammaram',
+                    name: 'วัดแพร่ธรรมาราม',
+                    tag: 'วัดป่า / ปฏิบัติธรรม',
+                    tagIcon: 'ph-fill ph-star-four',
+                    desc: 'วัดป่าในอำเภอเด่นชัย อยู่ห่างจากสถานีรถไฟเด่นชัยโดยเดินประมาณ 10 นาที รายล้อมด้วยร่มเงาไม้ป่าและบรรยากาศเงียบสงบ เหมาะสำหรับปฏิบัติธรรม',
+                    mapUrl: 'https://maps.app.goo.gl/S2etva3jtZdYGQzT8?g_st=al',
+                    reviewUrl: 'https://goo.gl/maps/pZiLbkJHA4oQ1brb7?g_st=ac',
+                    images: ['den-chai/wat-phrae-thammaram/1.jpeg','den-chai/wat-phrae-thammaram/2.jpeg','den-chai/wat-phrae-thammaram/3.jpeg']
+                },
+                {
+                    id: 'ban-mae-phuak-railway-station',
+                    name: 'สถานีรถไฟบ้านแม่พวก',
+                    tag: 'สถานีรถไฟ / สถาปัตยกรรม',
+                    tagIcon: 'ph-fill ph-train',
+                    desc: 'สถานีไม้โบราณอายุกว่า 100 ปี ในตำบลห้วยไร่ ได้รับรางวัลอาคารอนุรักษ์ศิลปสถาปัตยกรรมดีเด่น พ.ศ. 2559 ปัจจุบันเป็นที่หยุดรถที่มีรถไฟรับส่งผู้โดยสารวันละ 2 รอบ',
+                    mapUrl: 'https://www.google.com/maps/search/?api=1&query=สถานีรถไฟบ้านแม่พวก+เด่นชัย+แพร่',
+                    reviewUrl: 'https://www.ride-explorer.com/?p=845',
+                    images: ['den-chai/ban-mae-phuak-station/1.jpg','den-chai/ban-mae-phuak-station/2.jpg','den-chai/ban-mae-phuak-station/3.jpg']
+                }
+            ],
+
+            // ===== อำเภอสอง =====
+            'song': [
+                {
+                    id: 'mae-yom-national-park',
+                    name: 'อุทยานแห่งชาติแม่ยม',
+                    tag: 'อุทยานแห่งชาติ',
+                    tagIcon: 'ph-fill ph-mountains',
+                    desc: 'อุทยานแห่งชาติที่มีผืนป่าเบญจพรรณและป่าเต็งรังอุดมสมบูรณ์ โดยเฉพาะป่าสักทองผืนใหญ่ มีแม่น้ำยมไหลผ่าน เหมาะสำหรับพักผ่อน ชมธรรมชาติ กางเต็นท์ และศึกษาพรรณไม้',
+                    mapUrl: 'https://www.google.com/maps/search/?api=1&query=อุทยานแห่งชาติแม่ยม+สอง+แพร่',
+                    reviewUrl: 'https://www.google.com/maps/search/อุทยานแห่งชาติแม่ยม+สอง+แพร่',
+                    images: ['song/mae-yom-national-park/1.jpg','song/mae-yom-national-park/2.jpg','song/mae-yom-national-park/3.jpg','song/mae-yom-national-park/4.jpg']
+                },
+                {
+                    id: 'lilit-phra-lo-park',
+                    name: 'อุทยานลิลิตพระลอ',
+                    tag: 'วัฒนธรรม / ประวัติศาสตร์',
+                    tagIcon: 'ph-fill ph-book-open',
+                    desc: 'แหล่งท่องเที่ยวเชิงวัฒนธรรมและประวัติศาสตร์ บริเวณที่สันนิษฐานว่าเป็นเมืองสรองในวรรณคดีลิลิตพระลอ มีรูปปั้นพระลอ พระเพื่อน พระแพง ถ้ำจำลองปู่เจ้าสมิงพราย และสวนสาธารณะร่มรื่น',
+                    mapUrl: 'https://www.google.com/maps/search/?api=1&query=อุทยานลิลิตพระลอ+สอง+แพร่',
+                    reviewUrl: 'https://www.google.com/maps/search/อุทยานลิลิตพระลอ+สอง+แพร่',
+                    images: ['song/lilit-phra-lo-park/1.jpg','song/lilit-phra-lo-park/2.jpg','song/lilit-phra-lo-park/3.jpg']
+                },
+                {
+                    id: 'mae-song-reservoir',
+                    name: 'อ่างเก็บน้ำแม่สอง',
+                    tag: 'อ่างเก็บน้ำ / จุดชมวิว',
+                    tagIcon: 'ph-fill ph-mountains',
+                    desc: 'อ่างเก็บน้ำขนาดใหญ่ที่โอบล้อมด้วยภูเขาและทิวทัศน์ธรรมชาติของอำเภอสอง เป็นจุดพักผ่อนยอดนิยมสำหรับชมวิวยามเช้าและยามเย็น รับลม และถ่ายรูปบนสันเขื่อน',
+                    mapUrl: 'https://www.google.com/maps/search/?api=1&query=อ่างเก็บน้ำแม่สอง+สอง+แพร่',
+                    reviewUrl: 'https://www.google.com/maps/search/อ่างเก็บน้ำแม่สอง+สอง+แพร่',
+                    images: ['song/mae-song-reservoir/1.jpg','song/mae-song-reservoir/2.jpg','song/mae-song-reservoir/3.jpg']
+                },
+                {
+                    id: 'tao-coffee',
+                    name: 'กาแฟเต่า',
+                    tag: 'คาเฟ่',
+                    tagIcon: 'ph-fill ph-coffee',
+                    desc: 'ร้านกาแฟสไตล์โฮมมี่บรรยากาศเป็นกันเอง เสิร์ฟกาแฟหอมเข้ม ชานม เครื่องดื่มดับร้อน และเบเกอรี่ เหมาะสำหรับแวะพักเติมความสดชื่นในชุมชนห้วยหม้าย',
+                    mapUrl: 'https://www.google.com/maps/search/?api=1&query=กาแฟเต่า+สอง+แพร่',
+                    reviewUrl: 'https://www.google.com/maps/search/กาแฟเต่า+สอง+แพร่',
+                    images: ['song/tao-coffee/1.jpg','song/tao-coffee/2.jpg','song/tao-coffee/3.jpg','song/tao-coffee/4.jpg']
+                },
+                {
+                    id: 'food4you-song',
+                    name: 'ร้านอาหาร FOOD4YOU อ.สอง',
+                    tag: 'ร้านอาหาร',
+                    tagIcon: 'ph-fill ph-fork-knife',
+                    desc: 'ร้านอาหารบรรยากาศสบายในอำเภอสอง มีเมนูอาหารไทย อาหารฟิวชัน เครื่องดื่ม และของหวานหลากหลาย เหมาะสำหรับมารับประทานอาหารกับครอบครัวหรือกลุ่มเพื่อน',
+                    mapUrl: 'https://www.google.com/maps/search/?api=1&query=FOOD4YOU+สอง+แพร่',
+                    reviewUrl: 'https://www.google.com/maps/search/FOOD4YOU+สอง+แพร่',
+                    images: ['song/food4you/1.jpg','song/food4you/2.jpg','song/food4you/3.jpg']
+                }
+            ],
+
+            // ===== อำเภอวังชิ้น =====
+            'wang-chin': [
+                {
+                    id: 'wiang-kosai-national-park',
+                    name: 'อุทยานแห่งชาติเวียงโกศัย',
+                    tag: 'อุทยานแห่งชาติ',
+                    tagIcon: 'ph-fill ph-mountains',
+                    desc: 'อุทยานแห่งชาติที่มีน้ำตกหลายแห่ง เช่น น้ำตกแม่เกิ๋งหลวงและแม่เกิ๋งน้อย มีบ่อน้ำแร่กำมะถันร้อนราว 80 องศาเซลเซียส ภูเขาสูง ป่าหลายประเภท และเป็นแหล่งต้นน้ำสำคัญ',
+                    mapUrl: 'https://www.google.com/maps/search/?api=1&query=อุทยานแห่งชาติเวียงโกศัย+วังชิ้น+แพร่',
+                    reviewUrl: 'https://share.google/kKlllGf26JWYQNKn3',
+                    images: ['wang-chin/wiang-kosai-national-park/1.JPG','wang-chin/wiang-kosai-national-park/2.JPG','wang-chin/wiang-kosai-national-park/3.JPG','wang-chin/wiang-kosai-national-park/4.JPG']
+                },
+                {
+                    id: 'mae-chok-hot-spring',
+                    name: 'บ่อน้ำพุร้อนแม่จอก',
+                    tag: 'น้ำพุร้อน',
+                    tagIcon: 'ph-fill ph-drop',
+                    desc: 'บ่อน้ำแร่ธรรมชาติอุณหภูมิประมาณ 80 องศาเซลเซียส ที่บ้านแม่จอก มีภูมิทัศน์สำหรับพักผ่อน บริการแช่น้ำแร่ ห้องส่วนตัว บ่อแช่เท้าฟรี นวดแผนไทย ร้านอาหาร และของที่ระลึก',
+                    mapUrl: 'https://www.google.com/maps/search/?api=1&query=บ่อน้ำพุร้อนแม่จอก+วังชิ้น+แพร่',
+                    reviewUrl: 'https://maps.app.goo.gl/ybXiGKSRWdG8dVtY6',
+                    images: ['wang-chin/mae-chok-hot-spring/1.JPG','wang-chin/mae-chok-hot-spring/2.JPG','wang-chin/mae-chok-hot-spring/3.JPG','wang-chin/mae-chok-hot-spring/4.JPG']
+                },
+                {
+                    id: 'mon-sao-hin-phisong',
+                    name: 'ม่อนเสาหินพิศวง',
+                    tag: 'ธรณีวิทยา / จุดชมวิว',
+                    tagIcon: 'ph-fill ph-mountains',
+                    desc: 'ปรากฏการณ์ทางธรณีวิทยาจากลาวาหินบะซอลต์ที่เย็นตัวอย่างรวดเร็วเมื่อราว 5-6 ล้านปีก่อน จนเกิดเป็นเสาหินหลายเหลี่ยมเรียงตัวแปลกตา จึงเป็นแหล่งท่องเที่ยวสำคัญของชุมชน',
+                    mapUrl: 'https://www.google.com/maps/search/?api=1&query=ม่อนเสาหินพิศวง+วังชิ้น+แพร่',
+                    reviewUrl: 'https://share.google/OLIok1WEXAcWnzv5c',
+                    images: ['wang-chin/mon-sao-hin-phisong/1.JPG','wang-chin/mon-sao-hin-phisong/2.JPG','wang-chin/mon-sao-hin-phisong/3.JPG']
+                },
+                {
+                    id: 'mae-ang-reservoir-and-do-mae-ang',
+                    name: 'อ่างเก็บน้ำแม่อาง และ โด่แม่อาง',
+                    tag: 'อ่างเก็บน้ำ / ธรรมชาติ',
+                    tagIcon: 'ph-fill ph-mountains',
+                    desc: 'แหล่งท่องเที่ยวธรรมชาติบริเวณอ่างแม่อางและโด่แม่อาง มีประเพณีขึ้นโด่แม่อางฟังธรรมในวันวิสาขบูชา ใกล้ยอดดอยมีถ้ำ และด้านหลังดอยมีถ้ำผาเขียวซึ่งเป็นอดีตแหล่งสายแร่ทองคำ',
+                    mapUrl: 'https://www.google.com/maps/search/?api=1&query=อ่างเก็บน้ำแม่อาง+โด่แม่อาง+วังชิ้น+แพร่',
+                    reviewUrl: 'https://share.google/ZrDlWJooicN3pJtpv',
+                    images: ['wang-chin/mae-ang-reservoir/1.JPG','wang-chin/mae-ang-reservoir/2.JPG','wang-chin/mae-ang-reservoir/3.JPG','wang-chin/mae-ang-reservoir/4.JPG']
+                }
+            ]
+        };
+
+        // ===== RECOMMENDED PLACES — Carousel =====
+        (function () {
+            var places   = [];
+            var cardIdx  = 0;
+            var imgIdx   = {};
+
+            var panel       = document.getElementById('recommended-places');
+            var track       = document.getElementById('rp-cards-track');
+            var placeName   = document.getElementById('rp-place-name');
+            var cardCounter = document.getElementById('rp-card-counter');
+            var descEl      = document.getElementById('rp-desc');
+            var btnMap      = document.getElementById('rp-btn-map');
+            var btnReview   = document.getElementById('rp-btn-review');
+            var btnPrev     = document.getElementById('rp-card-prev');
+            var btnNext     = document.getElementById('rp-card-next');
+            var carousel    = document.getElementById('rp-carousel');
+
+            function buildCards() {
+                track.innerHTML = '';
+                imgIdx = {};
+
+                places.forEach(function (p, i) {
+                    var localizedPlace = getLocalizedPlace(p);
+                    imgIdx[p.id] = 0;
+
+                    var card = document.createElement('div');
+                    card.className = 'rp-card';
+
+                    var img = document.createElement('img');
+                    img.src = p.images[0];
+                    img.alt = localizedPlace.name;
+                    img.loading = 'lazy';
+                    card.appendChild(img);
+
+                    if (p.images.length > 1) {
+                        var cnt = document.createElement('span');
+                        cnt.className = 'rp-img-counter';
+                        cnt.textContent = '1 / ' + p.images.length;
+
+                        var ip = document.createElement('button');
+                        ip.className = 'rp-img-prev';
+                        ip.setAttribute('aria-label', localeCopy[activeLocale]['previous-image']);
+                        ip.innerHTML = '<i class="ph ph-caret-left"></i>';
+
+                        var inn = document.createElement('button');
+                        inn.className = 'rp-img-next';
+                        inn.setAttribute('aria-label', localeCopy[activeLocale]['next-image']);
+                        inn.innerHTML = '<i class="ph ph-caret-right"></i>';
+
+                        (function (place, imgEl, cntEl) {
+                            function shift(dir) {
+                                imgIdx[place.id] = (imgIdx[place.id] + dir + place.images.length) % place.images.length;
+                                imgEl.src = place.images[imgIdx[place.id]];
+                                cntEl.textContent = (imgIdx[place.id] + 1) + ' / ' + place.images.length;
+                            }
+                            ip.addEventListener('click', function (e) { e.stopPropagation(); shift(-1); });
+                            inn.addEventListener('click', function (e) { e.stopPropagation(); shift(1); });
+                        }(p, img, cnt));
+
+                        card.appendChild(ip);
+                        card.appendChild(inn);
+                        card.appendChild(cnt);
+                    }
+
+                    (function (idx) {
+                        card.addEventListener('click', function () {
+                            if (idx !== cardIdx) goToCard(idx);
+                        });
+                    }(i));
+
+                    track.appendChild(card);
+                });
+            }
+
+            function goToCard(idx) {
+                cardIdx = ((idx % places.length) + places.length) % places.length;
+
+                var cards = track.querySelectorAll('.rp-card');
+                var vw  = carousel.clientWidth;
+                var cw  = vw - 64;   // 32px peek ทั้งสองข้าง
+                var gap = 12;
+
+                cards.forEach(function (c, i) {
+                    c.classList.toggle('active', i === cardIdx);
+                    c.style.width    = cw + 'px';
+                    c.style.minWidth = cw + 'px';
+                });
+
+                // cardIdx=0 → transform 0 (padding-left คือ peek ซ้ายแล้ว)
+                // cardIdx=n → เลื่อน n*(cw+gap) เพื่อให้ card n อยู่ที่ x=32
+                track.style.transform = 'translateX(-' + (cardIdx * (cw + gap)) + 'px)';
+
+                cardCounter.textContent = (cardIdx + 1) + ' / ' + places.length;
+                var p = places[cardIdx];
+                var localizedPlace = getLocalizedPlace(p);
+                placeName.textContent = localizedPlace.name;
+                descEl.textContent    = localizedPlace.desc;
+                btnMap.href           = p.mapUrl;
+                btnReview.href        = p.reviewUrl;
+            }
+
+            btnPrev.addEventListener('click', function () { goToCard(cardIdx - 1); });
+            btnNext.addEventListener('click', function () { goToCard(cardIdx + 1); });
+
+            var tx = 0;
+            carousel.addEventListener('touchstart', function (e) {
+                tx = e.changedTouches[0].clientX;
+            }, { passive: true });
+            carousel.addEventListener('touchend', function (e) {
+                var diff = tx - e.changedTouches[0].clientX;
+                if (Math.abs(diff) > 40) goToCard(diff > 0 ? cardIdx + 1 : cardIdx - 1);
+            }, { passive: true });
+
+            window.addEventListener('resize', function () {
+                if (places.length > 0) goToCard(cardIdx);
+            });
+
+            window.renderRecommendedPlaces = function (districtId) {
+                var data = (window.recommendedPlacesData || {})[districtId];
+                if (!data || data.length === 0) {
+                    panel.classList.remove('visible');
+                    return;
+                }
+                places  = data;
+                cardIdx = 0;
+                buildCards();
+                requestAnimationFrame(function () {
+                    goToCard(0);
+                    panel.classList.add('visible');
+                });
+            };
+        }());
+
+        // ===== patch selectDistrict =====
+        var _origSD = selectDistrict;
+        selectDistrict = function (districtId) {
+            _origSD(districtId);
+            if (window.renderRecommendedPlaces) {
+                window.renderRecommendedPlaces(districtId);
+            }
+        };
+
+        // ===== LANGUAGE SYSTEM =====
+        // One document keeps interactions, location data, and the visitor's selected language in sync.
+        const localeCopy = {
+            th: {
+                title: 'PHRAE — ค้นพบเสน่ห์เมืองแพร่', description: 'สำรวจจังหวัดแพร่ เมืองล้านนาแห่งขุนเขา วัดเก่าแก่ และธรรมชาติอันงดงาม',
+                'menu': 'เมนู', 'menu-aria': 'เปิดเมนูนำทาง', 'close-menu-aria': 'ปิดเมนูนำทาง', 'nav-aria': 'เมนูหลัก', 'nav-home': 'หน้าแรก', 'nav-highlights': 'สถานที่ห้ามพลาด', 'nav-districts': 'สำรวจอำเภอ', 'language-aria': 'เปลี่ยนภาษา', 'language-menu-aria': 'เลือกภาษา',
+                'explore': 'สำรวจเมืองแพร่', 'journey': 'ค้นหา<br>เส้นทางของคุณ', 'scroll': 'เลื่อนลง',
+                'highlights-eyebrow': 'สถานที่ห้ามพลาด', 'highlights-title': 'ค้นพบ<em>ความงาม</em>ของแพร่',
+                'highlights-desc': 'เมืองล้านนาโบราณท่ามกลางป่าไม้สักและขุนเขา แพร่มอบประสบการณ์วัฒนธรรมภาคเหนือที่งดงามและเป็นธรรมชาติ',
+                'highlight-1-tag': 'แพร่', 'highlight-1-title': 'ดอยเล็ง', 'highlight-1-desc': 'จุดชมวิวทิวทัศน์ธรรมชาติและองค์พระธาตุที่สวยงาม',
+                'highlight-2-tag': 'มหัศจรรย์ธรรมชาติ', 'highlight-2-title': 'แก่งหลวง', 'highlight-2-desc': 'แก่งหินสลับซับซ้อนตามลำน้ำยม แหล่งท่องเที่ยวทางธรรมชาติ',
+                'highlight-3-tag': 'วัดศักดิ์สิทธิ์', 'highlight-3-title': 'วัดพระธาตุช่อแฮ', 'highlight-3-desc': 'วัดศักดิ์สิทธิ์คู่บ้านคู่เมืองแพร่ที่มีพระธาตุสีทองอร่าม',
+                'highlight-4-tag': 'อุทยานป่า', 'highlight-4-title': 'แพะเมืองผี', 'highlight-4-desc': 'ปรากฏการณ์ทางธรณีวิทยาที่สร้างเสาดินรูปร่างแปลกตา',
+                'highlight-5-tag': 'คุ้มประวัติศาสตร์', 'highlight-5-title': 'คุ้มเจ้าหลวง', 'highlight-5-desc': 'สถาปัตยกรรมล้านนาผสมยุโรป อดีตที่ประทับของเจ้าผู้ครองนครแพร่',
+                'location': 'ตำแหน่ง', 'reviews': 'รีวิว', 'contact': 'ติดต่อ', 'unavailable': 'ยังไม่มีข้อมูลในส่วนนี้',
+                'districts-eyebrow': 'สำรวจรายอำเภอ', 'districts-title': '8 อำเภอของ<em>จังหวัดแพร่</em>',
+                'districts-desc': 'สำรวจแต่ละอำเภอในจังหวัดแพร่ จากที่ราบลุ่มแม่น้ำยมไปจนถึงเทือกเขาสูง ค้นพบเสน่ห์ที่แตกต่างของแต่ละพื้นที่',
+                'province-label': 'จังหวัดแพร่', 'province-name': 'จังหวัดแพร่', 'province-subtitle': 'เลือกอำเภอเพื่อสำรวจ',
+                'province-desc': 'จังหวัดแพร่ตั้งอยู่ทางภาคเหนือตอนบนของประเทศไทย มีพื้นที่ 6,538.59 ตร.กม. เป็นเมืองเก่าแก่ที่มีประวัติศาสตร์ยาวนานกว่า 600 ปี ล้อมรอบด้วยเทือกเขาและป่าสัก มีแม่น้ำยมไหลผ่านเป็นสายหลัก',
+                'province-stat-districts': 'อำเภอ', 'province-stat-area': 'ตร.กม.', 'province-stat-population': 'ประชากร', 'province-stat-peak': 'ม. จุดสูงสุด',
+                'district-explore': 'สำรวจอำเภอนี้', 'recommended-title': 'สถานที่แนะนำ', 'open-map': 'เปิดแผนที่',
+                'stat-parks': 'อุทยานแห่งชาติ', 'stat-temples': 'วัดโบราณ', 'stat-history': 'ปีแห่งประวัติศาสตร์', 'stat-peak': 'ยอดเขาสูงสุด', 'stat-year-unit': 'ปี', 'stat-meter-unit': 'ม.',
+                'footer-about': 'เกี่ยวกับแพร่', 'footer-attractions': 'สถานที่ท่องเที่ยว', 'footer-getting-here': 'สำรวจอำเภอ', 'footer-contact': 'ติดต่อ',
+                'district-label': 'อำเภอ', 'district-stats': ['ตร.กม.', 'ตำบล', 'ประชากร', 'ทิศ'],
+                'previous-image': 'รูปก่อนหน้า', 'next-image': 'รูปถัดไป'
+            },
+            en: {
+                title: 'PHRAE — Discover Northern Thailand’s Hidden Gem', description: 'Explore Phrae: mountains, historic temples, teak forests, and living Lanna culture in Northern Thailand.',
+                'menu': 'Menu', 'menu-aria': 'Open navigation menu', 'close-menu-aria': 'Close navigation menu', 'nav-aria': 'Main navigation', 'nav-home': 'Home', 'nav-highlights': 'Highlights', 'nav-districts': 'Explore districts', 'language-aria': 'Change language', 'language-menu-aria': 'Choose a language',
+                'explore': 'Explore Phrae', 'journey': 'FIND YOUR<br>JOURNEY', 'scroll': 'Scroll',
+                'highlights-eyebrow': 'Must-Visit Destinations', 'highlights-title': 'Discover the <em>Beauty</em> of Phrae',
+                'highlights-desc': 'An ancient Lanna city among teak forests and mountains, Phrae offers a graceful, unhurried glimpse of Northern Thai culture.',
+                'highlight-1-tag': 'PHRAE', 'highlight-1-title': 'Doi Leng', 'highlight-1-desc': 'A scenic viewpoint with sweeping natural vistas and a beautiful sacred stupa.',
+                'highlight-2-tag': 'Natural Wonder', 'highlight-2-title': 'Kaeng Luang', 'highlight-2-desc': 'A dramatic rocky rapid along the Yom River and a much-loved natural escape.',
+                'highlight-3-tag': 'Sacred Temple', 'highlight-3-title': 'Wat Phra That Cho Hae', 'highlight-3-desc': 'Phrae’s revered temple, crowned by a luminous golden stupa.',
+                'highlight-4-tag': 'Forest Park', 'highlight-4-title': 'Phae Mueang Phi', 'highlight-4-desc': 'An extraordinary geological landscape of naturally sculpted earth pillars.',
+                'highlight-5-tag': 'Historic Residence', 'highlight-5-title': 'Khum Chao Luang', 'highlight-5-desc': 'A former ruler’s residence where Lanna and European architecture meet.',
+                'location': 'Location', 'reviews': 'Reviews', 'contact': 'Contact', 'unavailable': 'Information is not available for this item yet.',
+                'districts-eyebrow': 'Explore by District', 'districts-title': 'The 8 Districts of <em>Phrae</em>',
+                'districts-desc': 'Travel across Phrae, from the Yom River plain to its high mountain ridges, and discover the individual character of each district.',
+                'province-label': 'PHRAE PROVINCE', 'province-name': 'Phrae Province', 'province-subtitle': 'Select a district to explore',
+                'province-desc': 'In upper Northern Thailand, Phrae covers 6,538.59 sq. km. This historic city of more than 600 years is framed by mountains and teak forests, with the Yom River flowing through it.',
+                'province-stat-districts': 'Districts', 'province-stat-area': 'sq. km.', 'province-stat-population': 'Population', 'province-stat-peak': 'm highest peak',
+                'district-explore': 'Explore this district', 'recommended-title': 'Recommended places', 'open-map': 'Open map',
+                'stat-parks': 'National Parks', 'stat-temples': 'Ancient Temples', 'stat-history': 'Years of History', 'stat-peak': 'Highest Peak', 'stat-year-unit': 'yrs', 'stat-meter-unit': 'm',
+                'footer-about': 'About', 'footer-attractions': 'Attractions', 'footer-getting-here': 'Explore districts', 'footer-contact': 'Contact',
+                'district-label': 'DISTRICT', 'district-stats': ['sq. km.', 'subdistricts', 'population', 'direction'],
+                'previous-image': 'Previous image', 'next-image': 'Next image'
+            },
+            'zh-CN': {
+                title: 'PHRAE — 探索泰北帕府的隐世之美', description: '探索帕府：山峦、古寺、柚木森林，以及生生不息的兰纳文化。',
+                'menu': '菜单', 'menu-aria': '打开导航菜单', 'close-menu-aria': '关闭导航菜单', 'nav-aria': '主导航', 'nav-home': '首页', 'nav-highlights': '必访目的地', 'nav-districts': '探索县区', 'language-aria': '切换语言', 'language-menu-aria': '选择语言',
+                'explore': '探索帕府', 'journey': '开启您的<br>旅程', 'scroll': '向下滚动',
+                'highlights-eyebrow': '必访目的地', 'highlights-title': '发现帕府的<em>美丽</em>',
+                'highlights-desc': '帕府是一座坐落于柚木森林与群山之间的古老兰纳城市，让您从容感受泰北鲜活而真挚的文化。',
+                'highlight-1-tag': '帕府', 'highlight-1-title': '多朗山', 'highlight-1-desc': '可眺望自然风光，并欣赏优美佛塔的山顶观景点。',
+                'highlight-2-tag': '自然奇观', 'highlight-2-title': '銮滩', 'highlight-2-desc': '位于雍河沿岸、层叠岩石形成的壮丽急流。',
+                'highlight-3-tag': '神圣寺庙', 'highlight-3-title': '却哈佛塔寺', 'highlight-3-desc': '帕府最受敬仰的寺庙之一，金色佛塔熠熠生辉。',
+                'highlight-4-tag': '森林公园', 'highlight-4-title': '帕蒙披地质公园', 'highlight-4-desc': '由自然力量塑造而成、造型奇特的土柱地貌。',
+                'highlight-5-tag': '历史府邸', 'highlight-5-title': '昭銮府邸', 'highlight-5-desc': '昔日统治者的府邸，巧妙融合兰纳与欧洲建筑风格。',
+                'location': '位置', 'reviews': '评价', 'contact': '联系', 'unavailable': '此项目暂时没有可用信息。',
+                'districts-eyebrow': '探索各县区', 'districts-title': '帕府的<em>八个县区</em>',
+                'districts-desc': '从雍河平原到高耸的山脉，探索帕府各县区独具魅力的自然、人文与社区生活。',
+                'province-label': '帕府', 'province-name': '帕府', 'province-subtitle': '请选择一个县区进行探索',
+                'province-desc': '帕府位于泰国北部上游地区，面积为 6,538.59 平方公里。这座拥有 600 多年历史的古城，被群山和柚木森林环绕，雍河贯穿其中。',
+                'province-stat-districts': '县区', 'province-stat-area': '平方公里', 'province-stat-population': '人口', 'province-stat-peak': '米最高峰',
+                'district-explore': '探索此县区', 'recommended-title': '推荐地点', 'open-map': '打开地图',
+                'stat-parks': '国家公园', 'stat-temples': '古老寺庙', 'stat-history': '年历史', 'stat-peak': '最高峰', 'stat-year-unit': '年', 'stat-meter-unit': '米',
+                'footer-about': '关于帕府', 'footer-attractions': '景点', 'footer-getting-here': '探索县区', 'footer-contact': '联系我们',
+                'district-label': '县区', 'district-stats': ['平方公里', '乡镇', '人口', '方位'],
+                'previous-image': '上一张图片', 'next-image': '下一张图片'
+            }
+        };
+
+        const districtLocales = {
+            en: {
+                song: ['Song District', 'อำเภอสอง', 'Phrae’s northernmost district is a land of high mountains and rich forest, with waterfalls, scenic viewpoints, and access to Wiang Kosai National Park.'],
+                'rong-kwang': ['Rong Kwang District', 'อำเภอร้องกวาง', 'In northeast Phrae, fertile farmland lines the Yom River basin. Rice fields, historic temples, and enduring Lanna traditions shape this welcoming district.'],
+                'nong-muang-khai': ['Nong Muang Khai District', 'อำเภอหนองม่วงไข่', 'Phrae’s smallest district lies in the north-central plain. Its quiet agricultural communities offer a gentle picture of self-sufficient local life.'],
+                mueang: ['Mueang Phrae District', 'อำเภอเมืองแพร่', 'The provincial centre is home to the old town, historic walls, Wat Phra That Cho Hae, Wat Chom Sawan, and elegant Lanna teak houses.'],
+                long: ['Long District', 'อำเภอลอง', 'West of Phrae, historic Long is surrounded by mountains and memorable views. Its local museum shares the stories of this long-established community.'],
+                'sung-men': ['Sung Men District', 'อำเภอสูงเม่น', 'South of Mueang Phrae, Sung Men is celebrated nationally for mo hom indigo textiles, local wisdom centres, and artisan villages.'],
+                'den-chai': ['Den Chai District', 'อำเภอเด่นชัย', 'The southern gateway to Phrae, Den Chai is an important railway connection and an agricultural area known for longan, mangoes, and other crops.'],
+                'wang-chin': ['Wang Chin District', 'อำเภอวังชิ้น', 'In southwest Phrae, Wang Chin is mountainous and densely forested. Parts of Wiang Kosai National Park make it ideal for nature lovers and hikers.']
+            },
+            'zh-CN': {
+                song: ['颂县', 'Song District', '帕府最北端的县区，拥有高山与茂密森林。这里有瀑布、观景点，并可前往威央果赛国家公园。'],
+                'rong-kwang': ['隆光县', 'Rong Kwang District', '位于帕府东北部，雍河流域孕育了肥沃农田。稻田、古寺和深厚的兰纳传统构成了这里的风貌。'],
+                'nong-muang-khai': ['廊孟凯县', 'Nong Muang Khai District', '帕府面积最小的县区，位于北部中央平原。宁静的农业社区呈现出自给自足的朴实生活。'],
+                mueang: ['帕府城区', 'Mueang Phrae District', '帕府的行政与经济中心，拥有古城墙、却哈佛塔寺、琼沙旺寺以及优雅的兰纳柚木老宅。'],
+                long: ['隆县', 'Long District', '位于帕府西部的古老县区，四周群山环抱、景色秀丽。当地博物馆讲述着这个悠久社区的故事。'],
+                'sung-men': ['颂门县', 'Sung Men District', '位于帕府城区以南，以全国知名的靛蓝莫宏布料、地方智慧中心和手工艺村闻名。'],
+                'den-chai': ['登猜县', 'Den Chai District', '帕府南部的门户与重要铁路枢纽，也是龙眼、芒果等农作物的产区。'],
+                'wang-chin': ['旺钦县', 'Wang Chin District', '位于帕府西南部，山地起伏、森林茂密。威央果赛国家公园部分区域坐落于此，适合喜爱自然与徒步的旅行者。']
+            }
+        };
+
+        const districtMapNames = {
+            th: { song: ['สอง', 'Song'], 'rong-kwang': ['ร้องกวาง', 'Rong Kwang'], 'nong-muang-khai': ['หนองม่วงไข่', 'Nong Muang Khai'], mueang: ['เมืองแพร่', 'Mueang Phrae'], long: ['ลอง', 'Long'], 'sung-men': ['สูงเม่น', 'Sung Men'], 'den-chai': ['เด่นชัย', 'Den Chai'], 'wang-chin': ['วังชิ้น', 'Wang Chin'] },
+            en: { song: ['Song', 'อำเภอสอง'], 'rong-kwang': ['Rong Kwang', 'อำเภอร้องกวาง'], 'nong-muang-khai': ['Nong Muang Khai', 'อำเภอหนองม่วงไข่'], mueang: ['Mueang Phrae', 'อำเภอเมืองแพร่'], long: ['Long', 'อำเภอลอง'], 'sung-men': ['Sung Men', 'อำเภอสูงเม่น'], 'den-chai': ['Den Chai', 'อำเภอเด่นชัย'], 'wang-chin': ['Wang Chin', 'อำเภอวังชิ้น'] },
+            'zh-CN': { song: ['颂县', 'Song'], 'rong-kwang': ['隆光县', 'Rong Kwang'], 'nong-muang-khai': ['廊孟凯县', 'Nong Muang Khai'], mueang: ['帕府城区', 'Mueang Phrae'], long: ['隆县', 'Long'], 'sung-men': ['颂门县', 'Sung Men'], 'den-chai': ['登猜县', 'Den Chai'], 'wang-chin': ['旺钦县', 'Wang Chin'] }
+        };
+
+        const placeNames = {
+            en: { 'khamsan-gallery': 'Khamsan Gallery', 'kannan-art': 'Kamnan At Art Gallery', 'nhabaan-cafe': 'Nhabaan Café', 'baan-nong-coffee': 'Baan Nong Coffee', 'gn-coffee': 'GN Coffee', chohaae: 'Wat Phra That Cho Hae', khumjao: 'Khum Chao Luang', 'pae-mueang-phi': 'Phae Mueang Phi', 'baan-wongburi': 'Vongburi House', nakhuha: 'Wat Nakhuhā', 'hom-hom-center': 'Pa Ngiem Mo Hom Learning Centre', 'wat-sung-men': 'Wat Sung Men', 'tatad-saowwa': 'Tat Saowa Waterfall', 'angkaep-maeman': 'Mae Man Reservoir', 'ku-cafe': 'Khu Café', 'wiang-phen-cafe': 'Wiang Phen Café', 'tham-pha-nang-khoi': 'Pha Nang Khoi Cave', 'phrae-saeng-thian-buddha-park': 'Phrae Saeng Thian Buddha Park', 'mon-mae-thang': 'Mon Mae Thang Viewpoint', 'wat-phra-that-pu-jae': 'Wat Phra That Pu Jae', 'huai-rong-waterfall-arboretum': 'Huai Rong Waterfall Arboretum', 'komol-ancient-textile-museum': 'Komol Ancient Textile Museum', 'wat-si-don-kham': 'Wat Si Don Kham', 'wat-salaeng': 'Wat Salaeng', 'ban-pin-railway-station': 'Ban Pin Railway Station', 'satsatra-saen-mueang-hom': 'Satsatra Saen Mueang Hom', 'phraya-chai-bun-camp': 'Phraya Chai Bun Camp', 'wat-phra-that-suthon-mongkhon-khiri': 'Wat Phra That Suthon Mongkhon Khiri', 'wat-phrae-thammaram': 'Wat Phrae Thammaram', 'ban-mae-phuak-railway-station': 'Ban Mae Phuak Railway Station', 'mae-yom-national-park': 'Mae Yom National Park', 'lilit-phra-lo-park': 'Lilit Phra Lo Park', 'mae-song-reservoir': 'Mae Song Reservoir', 'tao-coffee': 'Tao Coffee', 'food4you-song': 'FOOD4YOU Restaurant', 'wiang-kosai-national-park': 'Wiang Kosai National Park', 'mae-chok-hot-spring': 'Mae Chok Hot Spring', 'mon-sao-hin-phisong': 'Mon Sao Hin Phisong', 'mae-ang-reservoir-and-do-mae-ang': 'Mae Ang Reservoir & Do Mae Ang' },
+            'zh-CN': { 'khamsan-gallery': '甘盛画廊', 'kannan-art': '坎南阿特乡村画廊', 'nhabaan-cafe': '门前咖啡馆', 'baan-nong-coffee': '班农咖啡', 'gn-coffee': 'GN 咖啡', chohaae: '却哈佛塔寺', khumjao: '昭銮府邸', 'pae-mueang-phi': '帕蒙披地质公园', 'baan-wongburi': '翁布里宅邸', nakhuha: '纳库哈寺', 'hom-hom-center': '帕念莫宏布学习中心', 'wat-sung-men': '颂门寺', 'tatad-saowwa': '达沙瓦瀑布', 'angkaep-maeman': '湄曼水库', 'ku-cafe': '库咖啡馆', 'wiang-phen-cafe': '威昂佩恩咖啡馆', 'tham-pha-nang-khoi': '帕囊科伊洞穴', 'phrae-saeng-thian-buddha-park': '帕府圣光佛教公园', 'mon-mae-thang': '湄塘山观景点', 'wat-phra-that-pu-jae': '普杰佛塔寺', 'huai-rong-waterfall-arboretum': '怀荣瀑布树木园', 'komol-ancient-textile-museum': '科蒙古布博物馆', 'wat-si-don-kham': '西敦康寺', 'wat-salaeng': '沙棱寺', 'ban-pin-railway-station': '班宾火车站', 'satsatra-saen-mueang-hom': '桑孟鸿文化学习中心', 'phraya-chai-bun-camp': '帕耶猜本营地', 'wat-phra-that-suthon-mongkhon-khiri': '苏通蒙空基里佛塔寺', 'wat-phrae-thammaram': '帕府达玛兰寺', 'ban-mae-phuak-railway-station': '班湄普阿火车站', 'mae-yom-national-park': '湄雍国家公园', 'lilit-phra-lo-park': '丽丽帕罗公园', 'mae-song-reservoir': '湄颂水库', 'tao-coffee': '龟咖啡', 'food4you-song': 'FOOD4YOU 餐厅', 'wiang-kosai-national-park': '威央果赛国家公园', 'mae-chok-hot-spring': '湄卓温泉', 'mon-sao-hin-phisong': '神奇石柱山', 'mae-ang-reservoir-and-do-mae-ang': '湄昂水库与多湄昂山' }
+        };
+
+        const localizedTags = {
+            en: { 'แกลอรี่ศิลปะ': 'art gallery', 'หอศิลป์': 'art gallery', 'คาเฟ่': 'café', 'ร้านกาแฟ': 'coffee shop', 'วัด / พระธาตุ': 'temple and stupa', 'สถานที่ประวัติศาสตร์': 'historic site', 'แหล่งธรรมชาติ': 'natural attraction', 'สถาปัตยกรรม': 'architectural landmark', 'วัด': 'temple', 'วัฒนธรรม / หัตถกรรม': 'culture and craft centre', 'ถ้ำ / แหล่งธรรมชาติ': 'cave and natural attraction', 'พุทธสถาน': 'Buddhist site', 'จุดชมวิว': 'viewpoint', 'น้ำตก / แหล่งธรรมชาติ': 'waterfall and natural attraction', 'พิพิธภัณฑ์ / ผ้าโบราณ': 'museum of historic textiles', 'สถานีรถไฟ': 'railway station', 'แหล่งเรียนรู้': 'learning centre', 'สถานที่สำคัญ': 'landmark', 'วัดป่า / ปฏิบัติธรรม': 'forest temple and meditation site', 'สถานีรถไฟ / สถาปัตยกรรม': 'historic railway architecture', 'อุทยานแห่งชาติ': 'national park', 'วัฒนธรรม / ประวัติศาสตร์': 'cultural and historic park', 'อ่างเก็บน้ำ / จุดชมวิว': 'reservoir and viewpoint', 'ร้านอาหาร': 'restaurant', 'น้ำพุร้อน': 'hot spring', 'ธรณีวิทยา / จุดชมวิว': 'geological viewpoint', 'อ่างเก็บน้ำ / ธรรมชาติ': 'natural reservoir' },
+            'zh-CN': { 'แกลอรี่ศิลปะ': '艺术画廊', 'หอศิลป์': '艺术馆', 'คาเฟ่': '咖啡馆', 'ร้านกาแฟ': '咖啡店', 'วัด / พระธาตุ': '寺庙与佛塔', 'สถานที่ประวัติศาสตร์': '历史景点', 'แหล่งธรรมชาติ': '自然景点', 'สถาปัตยกรรม': '建筑地标', 'วัด': '寺庙', 'วัฒนธรรม / หัตถกรรม': '文化与手工艺中心', 'ถ้ำ / แหล่งธรรมชาติ': '洞穴与自然景点', 'พุทธสถาน': '佛教圣地', 'จุดชมวิว': '观景点', 'น้ำตก / แหล่งธรรมชาติ': '瀑布与自然景点', 'พิพิธภัณฑ์ / ผ้าโบราณ': '古布博物馆', 'สถานีรถไฟ': '火车站', 'แหล่งเรียนรู้': '学习中心', 'สถานที่สำคัญ': '地标', 'วัดป่า / ปฏิบัติธรรม': '森林寺院与禅修地', 'สถานีรถไฟ / สถาปัตยกรรม': '历史火车站建筑', 'อุทยานแห่งชาติ': '国家公园', 'วัฒนธรรม / ประวัติศาสตร์': '文化与历史公园', 'อ่างเก็บน้ำ / จุดชมวิว': '水库与观景点', 'ร้านอาหาร': '餐厅', 'น้ำพุร้อน': '温泉', 'ธรณีวิทยา / จุดชมวิว': '地质观景点', 'อ่างเก็บน้ำ / ธรรมชาติ': '自然水库' }
+        };
+
+        let activeLocale = 'th';
+        let selectedDistrictId = null;
+        let activeHeroItem = thumbItems[0];
+
+        function getDistrictPresentation(districtId, source) {
+            if (activeLocale === 'th') {
+                return { label: localeCopy.th['district-label'], name: source.th, subtitle: source.en, desc: source.desc, stats: source.stats };
+            }
+            const translated = districtLocales[activeLocale][districtId];
+            const direction = { 'เหนือ': ['North', '北部'], 'ตะวันออกเฉียงเหนือ': ['Northeast', '东北部'], 'เหนือ-กลาง': ['North-central', '北部中央'], 'กลาง': ['Central', '中部'], 'ตะวันตก': ['West', '西部'], 'ใต้-กลาง': ['South-central', '南部中央'], 'ใต้': ['South', '南部'], 'ตะวันตกเฉียงใต้': ['Southwest', '西南部'] };
+            return {
+                label: localeCopy[activeLocale]['district-label'], name: translated[0], subtitle: translated[1], desc: translated[2],
+                stats: source.stats.map((stat, index) => ({
+                    value: index === 3 ? direction[stat.value][activeLocale === 'en' ? 0 : 1] : stat.value,
+                    label: localeCopy[activeLocale]['district-stats'][index]
+                }))
+            };
+        }
+
+        function getLocalizedPlace(place) {
+            if (activeLocale === 'th') return place;
+            const name = placeNames[activeLocale][place.id] || place.name;
+            const category = localizedTags[activeLocale][place.tag] || place.tag;
+            const district = selectedDistrictId ? districtMapNames[activeLocale][selectedDistrictId][0] : 'Phrae';
+            return {
+                ...place,
+                name,
+                desc: activeLocale === 'en'
+                    ? `${name} is a ${category} in ${district}, inviting you to experience Phrae’s distinctive nature, culture, and local way of life.`
+                    : `${name}是位于${district}的${category}，欢迎您在此感受帕府独特的自然、文化与当地生活。`
+            };
+        }
+
+        function updateMapLabels() {
+            const names = districtMapNames[activeLocale];
+            document.querySelectorAll('.district-label').forEach((label) => {
+                label.textContent = names[label.dataset.district][0];
+            });
+            document.querySelectorAll('.district-label-en').forEach((label) => {
+                label.textContent = names[label.dataset.district][1];
+            });
+            document.querySelectorAll('.district-pill').forEach((pill) => {
+                pill.textContent = names[pill.dataset.district][0];
+            });
+        }
+
+        function updateHeroText() {
+            if (!activeHeroItem) return;
+            heroLabel.textContent = activeHeroItem.getAttribute(`data-label-${activeLocale}`) || activeHeroItem.getAttribute('data-label');
+            heroSubtitle.textContent = activeHeroItem.getAttribute(`data-title-${activeLocale}`) || activeHeroItem.getAttribute('data-title');
+        }
+
+        function applyLocale(locale) {
+            activeLocale = localeCopy[locale] ? locale : 'th';
+            const copy = localeCopy[activeLocale];
+            document.documentElement.lang = activeLocale;
+            document.title = copy.title;
+            document.querySelector('meta[name="description"]')?.setAttribute('content', copy.description);
+
+            document.querySelectorAll('[data-i18n]').forEach((element) => {
+                const value = copy[element.dataset.i18n];
+                if (value) element.textContent = value;
+            });
+            document.querySelectorAll('[data-i18n-html]').forEach((element) => {
+                const value = copy[element.dataset.i18nHtml];
+                if (value) element.innerHTML = value;
+            });
+            document.querySelectorAll('[data-i18n-aria]').forEach((element) => {
+                const value = copy[element.dataset.i18nAria];
+                if (value) element.setAttribute('aria-label', value);
+            });
+            document.querySelectorAll('.language-option').forEach((option) => {
+                option.setAttribute('aria-checked', String(option.dataset.lang === activeLocale));
+            });
+
+            updateHeroText();
+            updateMapLabels();
+            if (selectedDistrictId) {
+                selectDistrict(selectedDistrictId);
+            }
+            try { localStorage.setItem('phrae-language', activeLocale); } catch (_) { /* private browsing can block storage */ }
+        }
+
+        const languageSwitcher = document.getElementById('language-switcher');
+        const languageButton = document.getElementById('btn-lang');
+        languageButton.addEventListener('click', () => {
+            const isOpen = languageSwitcher.classList.toggle('is-open');
+            languageButton.setAttribute('aria-expanded', String(isOpen));
+        });
+        document.querySelectorAll('.language-option').forEach((option) => {
+            option.addEventListener('click', () => {
+                applyLocale(option.dataset.lang);
+                languageSwitcher.classList.remove('is-open');
+                languageButton.setAttribute('aria-expanded', 'false');
+                languageButton.focus();
+            });
+        });
+        document.addEventListener('click', (event) => {
+            if (!languageSwitcher.contains(event.target)) {
+                languageSwitcher.classList.remove('is-open');
+                languageButton.setAttribute('aria-expanded', 'false');
+            }
+        });
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                languageSwitcher.classList.remove('is-open');
+                languageButton.setAttribute('aria-expanded', 'false');
+                if (siteNav.classList.contains('is-open')) {
+                    setNavigationOpen(false);
+                    menuButton.focus();
+                }
+            }
+        });
+
+        try {
+            const requestedLocale = new URLSearchParams(window.location.search).get('lang');
+            const savedLocale = localStorage.getItem('phrae-language');
+            applyLocale(localeCopy[requestedLocale] ? requestedLocale : (localeCopy[savedLocale] ? savedLocale : 'th'));
+        } catch (_) {
+            applyLocale('th');
+        }
+    </script>
+</body>
+
+</html>
+
