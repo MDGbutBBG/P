@@ -1253,13 +1253,16 @@
         /* ===== SCROLL-REVEAL ANIMATION ===== */
         .reveal {
             opacity: 0;
-            transform: translateY(40px);
+            transform: translateY(28px);
             transition: opacity 0.8s var(--ease-smooth), transform 0.8s var(--ease-smooth);
         }
 
+        /* Use transform: none (not translateY(0)) so the panel stops being a
+           transformed containing block — otherwise children (cards/buttons)
+           can visually scale/overflow after content is injected. */
         .reveal.visible {
             opacity: 1;
-            transform: translateY(0);
+            transform: none;
         }
 
         .reveal-delay-1 {
@@ -1433,6 +1436,8 @@
         .map-info-panel {
             flex: 1;
             min-width: 0;
+            max-width: 100%;
+            overflow-x: hidden;
         }
 
         .map-info-title {
@@ -1834,6 +1839,8 @@
         #recommended-places {
             display: none;
             margin-top: 2rem;
+            max-width: 100%;
+            overflow-x: hidden;
         }
         #recommended-places.visible { display: block; }
 
@@ -4189,10 +4196,14 @@
                 }
                 places  = data;
                 cardIdx = 0;
+                // Show first so carousel.clientWidth is real — measuring while
+                // display:none yields 0 and later layout "pops" wider.
+                panel.classList.add('visible');
                 buildCards();
                 requestAnimationFrame(function () {
-                    goToCard(0);
-                    panel.classList.add('visible');
+                    requestAnimationFrame(function () {
+                        goToCard(0);
+                    });
                 });
             };
         }());
